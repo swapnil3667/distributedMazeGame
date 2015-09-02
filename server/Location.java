@@ -1,4 +1,8 @@
 
+/**
+ * This class is a data structure to hold x,y coordinates
+ * representing a location on maze
+ * */
 public class Location {
 	private int x;
 	private int y;

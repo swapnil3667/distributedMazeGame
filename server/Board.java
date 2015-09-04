@@ -8,7 +8,9 @@ import java.util.List;
 public interface Board {
 	int size = 0;
 	int noOfTreasures = 0;
-	List<Player> playersList = null;
-	List<Treasure> treasureList = null;
-	
+	List<PlayerImpl> playersList = null;
+	List<TreasureImpl> treasureList = null;
+	public void generateTreasures();
+	public void addPlayer(PlayerImpl player);
+	public void printCurrentBoardState();
 } 

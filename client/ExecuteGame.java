@@ -3,9 +3,7 @@ import java.rmi.Remote;
 
 
 public interface ExecuteGame extends Remote {
-	Board board = null;
-	public Location generatePlayerLocation(int id) throws RemoteException;
-	public int generatePlayerId() throws RemoteException;
+//	Board board = null;
 	public void startGame() throws RemoteException;
 	public void joinGame() throws RemoteException;
 	public void movePlayer() throws RemoteException;

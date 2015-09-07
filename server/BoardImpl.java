@@ -19,6 +19,10 @@ public class BoardImpl implements Board{
 		this.noOfTreasures = noOfTreasures;
 	}
 	
+	/**
+	 * Method to add player to players list
+	 * @param player : player to be added to playersList
+	 * */
 	public void addPlayer(PlayerImpl player){
 		if(playersList == null) playersList = new ArrayList<>();
 		playersList.add(player);
@@ -40,7 +44,10 @@ public class BoardImpl implements Board{
 		return false;
 	}
 	
-	//Method to populate treasureList with random treasure locations
+	
+	/**
+	 * Method to generate random treasures with location and value 
+	 */
 	public void generateTreasures(){
 		logObject.info("Initialize treasures list");
 		treasureList = new ArrayList<>();

@@ -10,32 +10,29 @@ public class Server{
 
 	public static void main(String[] args) {
 		Scanner s = new Scanner(System.in);
+		System.out.print("Enter size of board : ");
 		int sizeOfBoard = s.nextInt();
+		System.out.print("Enter number of treasures to be generated: ");
 		int noOfTreasures = s.nextInt();
 		logObject.info("Executing game!!");
-//		ExecuteGameImpl testObj = new ExecuteGameImpl(sizeOfBoard, noOfTreasures);
-//		System.out.println("Enter 1 ");
-//		testObj.joinGame();
-//		testObj.joinGame();
-//		testObj.joinGame();
-
 
 		ExecuteGame stub = null;
 		Registry registry = null;
-
+		ExecuteGameImpl obj = ExecuteGameImpl.getInstance(sizeOfBoard, noOfTreasures);
 		try {
-			ExecuteGameImpl obj = ExecuteGameImpl.getInstance(sizeOfBoard, noOfTreasures);
 			stub = (ExecuteGame) UnicastRemoteObject.exportObject(obj, 0);
 			registry = LocateRegistry.getRegistry();
 			registry.bind("Game", stub);
-
 			System.err.println("Server ready");
+			obj.waitTwentySeconds();
+			
 		} catch (Exception e) {
 			try{
 				registry.unbind("Game");
 				registry.bind("Game",stub);
 				System.err.println("Server ready");
-			}catch(Exception ee){
+				obj.waitTwentySeconds();
+				}catch(Exception ee){
 				System.err.println("Server exception: " + ee.toString());
 				ee.printStackTrace();
 			}

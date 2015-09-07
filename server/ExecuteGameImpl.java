@@ -28,11 +28,6 @@ public class ExecuteGameImpl implements ExecuteGame {
 		logObject.info("Initializing the game board");
 		//Initialize board
 		board = new BoardImpl(sizeOfBoard, noOfTreasures);
-		//Randomly allocate location to all treasures
-		/*THIS NEEDS TO BE DONE AT THE END OF 20 SECOND SO THAT 
-		 * ALL THE PLAYERS ARE ASSIGNED LOCATIONS AND REMAINING
-		 * CAN BE ASSIGNED TO TREASURES*/
-		board.generateTreasures();
 		
 	}	
 	
@@ -69,6 +64,9 @@ public class ExecuteGameImpl implements ExecuteGame {
 		
 		board.printCurrentBoardState();
 		//Return location to client that called joinGame
+		
+		//Generating treasures at the end of 20 seconds - to avoid overlap with any players generated so far
+		board.generateTreasures();
 	}
 	
 	public void movePlayer(){

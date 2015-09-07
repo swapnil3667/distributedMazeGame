@@ -20,6 +20,22 @@ public class BoardImpl implements Board{
 		playersList.add(player);
 	}
 	
+	/**
+	 * Method to check if randomly generated x,y for treasure
+	 * overlaps with a player's location. If yes, look for some
+	 * other x,y
+	 * @param x : randomly generated x for treasure
+	 * @param y : randomly generated y for treasure
+	 * */
+	public boolean checkTreasureOverlapWithPlayer(int x, int y){
+		for(PlayerImpl eachPlayer : playersList){
+			if (eachPlayer.getLocation().getX() == x && eachPlayer.getLocation().getY() == y){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	//Method to populate treasureList with random treasure locations
 	public void generateTreasures(){
 		logObject.info("Initialize treasures list");
@@ -28,6 +44,7 @@ public class BoardImpl implements Board{
 		for(int i = 0;i<noOfTreasures;i++){
 			int x = randomGenerator.nextInt(size);
 			int y = randomGenerator.nextInt(size);
+			if(checkTreasureOverlapWithPlayer(x, y)) continue;
 			TreasureImpl treasure = new TreasureImpl();
 			treasure.setLocation(x, y);
 			treasure.setValue(1);
@@ -35,6 +52,7 @@ public class BoardImpl implements Board{
 		}
 		logObject.info("Treasures generated");
 	}
+	
 	
 	public void printCurrentBoardState(){
 		for(PlayerImpl eachPlayer: playersList){

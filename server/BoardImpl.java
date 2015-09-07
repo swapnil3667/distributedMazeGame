@@ -62,7 +62,7 @@ public class BoardImpl implements Board{
 		
 		for(TreasureImpl eachTreasure: treasureList){
 			Location location = eachTreasure.getLocation();
-			System.out.println("Player [val = "+eachTreasure.getValue()+"] is at ("+location.getX()+", "+location.getY()+")");
+			System.out.println("Treasure [val = "+eachTreasure.getValue()+"] is at ("+location.getX()+", "+location.getY()+")");
 		}
 		
 	}

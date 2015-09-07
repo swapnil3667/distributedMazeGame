@@ -46,6 +46,9 @@ public class ExecuteGameImpl implements ExecuteGame {
 		return randomGenerator.nextInt(8999)+1000;
 	}
 	
+	/**
+	 * Method that different clients will call to join the game
+	 * */
 	public void joinGame(){
 		logObject.info("Join game request received by player number "+(++noOfPlayers));
 		//When the first player calls this, start game is called.
@@ -62,11 +65,12 @@ public class ExecuteGameImpl implements ExecuteGame {
 		board.addPlayer(player);
 		logObject.info("Join request processed successfully. Player added to players list.");
 		
-		board.printCurrentBoardState();
-		//Return location to client that called joinGame
-		
 		//Generating treasures at the end of 20 seconds - to avoid overlap with any players generated so far
 		board.generateTreasures();
+		
+		board.printCurrentBoardState();
+		//Return location to client that called joinGame
+
 	}
 	
 	public void movePlayer(){

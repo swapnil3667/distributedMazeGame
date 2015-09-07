@@ -13,7 +13,7 @@ public class server{
 		int sizeOfBoard = s.nextInt();
 		int noOfTreasures = s.nextInt();
 		logObject.info("Executing game!!");
-		ExecuteGameImpl testObj = new ExecuteGameImpl(sizeOfBoard, noOfTreasures);
+		ExecuteGameImpl testObj = ExecuteGameImpl.getInstance(sizeOfBoard, noOfTreasures);
 		testObj.joinGame();
 		testObj.joinGame();
 		testObj.joinGame();

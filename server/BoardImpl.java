@@ -10,7 +10,11 @@ public class BoardImpl implements Board{
 	List<TreasureImpl> treasureList = null;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	
-	public BoardImpl(int size, int noOfTreasures) {
+	public static BoardImpl getInstance(int size, int noOfTreasures){
+		return new BoardImpl(size, noOfTreasures);
+	}
+	
+	private BoardImpl(int size, int noOfTreasures) {
 		this.size = size;
 		this.noOfTreasures = noOfTreasures;
 	}

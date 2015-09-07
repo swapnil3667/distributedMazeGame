@@ -19,7 +19,11 @@ public class ExecuteGameImpl implements ExecuteGame {
 	int noOfPlayers= 0;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	
-	public ExecuteGameImpl(int sizeOfBoard, int noOfTreasures) {
+	public static ExecuteGameImpl getInstance(int sizeOfBoard, int noOfTreasures){
+		return new ExecuteGameImpl(sizeOfBoard, noOfTreasures);
+	}
+	
+	private ExecuteGameImpl(int sizeOfBoard, int noOfTreasures) {
 		this.sizeOfBoard = sizeOfBoard;
 		this.noOfTreasures = noOfTreasures;
 	}
@@ -27,7 +31,7 @@ public class ExecuteGameImpl implements ExecuteGame {
 	public void startGame(){
 		logObject.info("Initializing the game board");
 		//Initialize board
-		board = new BoardImpl(sizeOfBoard, noOfTreasures);
+		board = BoardImpl.getInstance(sizeOfBoard, noOfTreasures);
 		
 	}	
 	

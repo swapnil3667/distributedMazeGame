@@ -16,9 +16,11 @@ public class Server{
 		int noOfTreasures = s.nextInt();
 		logObject.info("Executing game!!");
 
+		System.setProperty("java.rmi.server.codebase", "file:/home/harshul/workspace/distributedMazeGame/server");
 		ExecuteGame stub = null;
 		Registry registry = null;
 		ExecuteGameImpl obj = ExecuteGameImpl.getInstance(sizeOfBoard, noOfTreasures);
+		
 		try {
 			stub = (ExecuteGame) UnicastRemoteObject.exportObject(obj, 0);
 			registry = LocateRegistry.getRegistry();
@@ -37,6 +39,5 @@ public class Server{
 				ee.printStackTrace();
 			}
 		}
-
 	}
 }

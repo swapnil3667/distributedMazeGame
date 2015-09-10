@@ -1,20 +1,21 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
-public class BoardImpl implements Board{
+public class BoardImpl implements Board, Serializable{
 	int size = 0;
 	int noOfTreasures = 0;
-	List<PlayerImpl> playersList = null;
-	List<TreasureImpl> treasureList = null;
+	List<Player> playersList = null;
+	List<Treasure> treasureList = null;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	
 	public static BoardImpl getInstance(int size, int noOfTreasures){
 		return new BoardImpl(size, noOfTreasures);
 	}
 	
-	private BoardImpl(int size, int noOfTreasures) {
+	public BoardImpl(int size, int noOfTreasures) {
 		this.size = size;
 		this.noOfTreasures = noOfTreasures;
 	}
@@ -23,7 +24,7 @@ public class BoardImpl implements Board{
 	 * Method to add player to players list
 	 * @param player : player to be added to playersList
 	 * */
-	public void addPlayer(PlayerImpl player){
+	public void addPlayer(Player player){
 		if(playersList == null) playersList = new ArrayList<>();
 		playersList.add(player);
 	}
@@ -36,7 +37,7 @@ public class BoardImpl implements Board{
 	 * @param y : randomly generated y for treasure
 	 * */
 	public boolean checkTreasureOverlapWithPlayer(int x, int y){
-		for(PlayerImpl eachPlayer : playersList){
+		for(Player eachPlayer : playersList){
 			if (eachPlayer.getLocation().getX() == x && eachPlayer.getLocation().getY() == y){
 				return true;
 			}
@@ -66,17 +67,19 @@ public class BoardImpl implements Board{
 	
 	
 	public void printCurrentBoardState(){
-		for(PlayerImpl eachPlayer: playersList){
+		for(Player eachPlayer: playersList){
 			Location location = eachPlayer.getLocation();
 			System.out.println("Player ["+eachPlayer.getId()+"] is at ("+location.getX()+", "+location.getY()+")");
 		}
 		
-		for(TreasureImpl eachTreasure: treasureList){
+		for(Treasure eachTreasure: treasureList){
 			Location location = eachTreasure.getLocation();
 			System.out.println("Treasure [val = "+eachTreasure.getValue()+"] is at ("+location.getX()+", "+location.getY()+")");
 		}
 		
 	}
+
+	
 	
 }
 

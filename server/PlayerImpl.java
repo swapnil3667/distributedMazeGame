@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class PlayerImpl implements Player {
+public class PlayerImpl implements Player,Serializable {
 	Location location = null;
 	int treasureCount = 0;
 	int id=0;

@@ -1,0 +1,3 @@
+grant codeBase "file:/home/harshul/workspace/distributedMazeGame/server" {
+    permission java.security.AllPermission;
+};

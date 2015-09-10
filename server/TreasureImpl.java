@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class TreasureImpl implements Treasure {
+public class TreasureImpl implements Treasure, Serializable{
 	Location location = null;
 	int value = 0;
 	

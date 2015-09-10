@@ -12,7 +12,10 @@ public class Client {
 		try {
 		    Registry registry = LocateRegistry.getRegistry(host);
 		    ExecuteGame stub = (ExecuteGame) registry.lookup("Game");
-		    System.out.println("response: "+stub.joinGame());
+		    System.out.println(stub.testStringReponse());
+		    Board board = stub.joinGame();
+//		    System.out.println("response: "+stub.joinGame());
+//		    board.printCurrentBoardState();
 		    
 		} catch (Exception e) {
 		    System.err.println("Client exception: " + e.toString());

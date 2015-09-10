@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -6,26 +7,25 @@ import java.util.logging.Logger;
  * Methods like movePlayer and startGame will be defined here.
  * This class will handle all the place holders and data structures
  * at server side and update respective client as well.
- * Stub for this class will be registered in rmiregistry and
+ * Stub for this class will be registered in rmi-registry and
  * that will be looked up by client to call.
  * 
  * At the end of 20 Sec, startGame method will respond to all the
  * connected players with initial maze.
  * */
-public class ExecuteGameImpl implements ExecuteGame {
+public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	Board board = null;
 	int sizeOfBoard=0;
 	int noOfTreasures = 0;
 	int noOfPlayers= 0;
 	boolean isTwentySecOver = false;
-	
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	
 	public static ExecuteGameImpl getInstance(int sizeOfBoard, int noOfTreasures){
 		return new ExecuteGameImpl(sizeOfBoard, noOfTreasures);
 	}
 	
-	private ExecuteGameImpl(int sizeOfBoard, int noOfTreasures) {
+	public ExecuteGameImpl(int sizeOfBoard, int noOfTreasures) {
 		this.sizeOfBoard = sizeOfBoard;
 		this.noOfTreasures = noOfTreasures;
 	}
@@ -91,7 +91,7 @@ public class ExecuteGameImpl implements ExecuteGame {
 	/**
 	 * Method that different clients will call to join the game
 	 * */
-	public String joinGame(){
+	public Board joinGame(){
 		if(isTwentySecOver){
 			logObject.info("Join game request received by player number "+(++noOfPlayers));
 			//When the first player calls this, start game is called.
@@ -102,18 +102,23 @@ public class ExecuteGameImpl implements ExecuteGame {
 			Location location = generatePlayerLocation(id);
 			
 			//Setting player parameters
-			PlayerImpl player = new PlayerImpl(id);
+			Player player = new PlayerImpl(id);
 			player.setLocation(location.getX(), location.getY());
 			player.setTreasureCount(0);
 			board.addPlayer(player);
 			logObject.info("Join request processed successfully. Player added to players list.");
-
+			
+			return board;
 			//Return location to client that called joinGame
-			return "Game joined by player "+noOfPlayers+" with id : "+id;
+//			return "Game joined by player "+noOfPlayers+" with id : "+id;
 		}
-		return "";
+		return null;
 	}
 	
+	
+	public String testStringReponse(){
+		return "This is a message from server";
+	}
 	
 	public void movePlayer(){
 		

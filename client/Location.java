@@ -4,7 +4,7 @@ import java.io.Serializable;
  * This class is a data structure to hold x,y coordinates
  * representing a location on maze
  * */
-public class Location implements Serializable {
+public class Location implements Serializable{
 	private int x;
 	private int y;
 	

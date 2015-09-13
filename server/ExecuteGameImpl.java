@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  * at server side and update respective client as well.
  * Stub for this class will be registered in rmi-registry and
  * that will be looked up by client to call.
- * 
+ *
  * At the end of 20 Sec, startGame method will respond to all the
  * connected players with initial maze.
  * */
@@ -20,16 +20,16 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	int noOfPlayers= 0;
 	boolean isTwentySecOver = false;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
-	
+
 	public static ExecuteGameImpl getInstance(int sizeOfBoard, int noOfTreasures){
 		return new ExecuteGameImpl(sizeOfBoard, noOfTreasures);
 	}
-	
+
 	public ExecuteGameImpl(int sizeOfBoard, int noOfTreasures) {
 		this.sizeOfBoard = sizeOfBoard;
 		this.noOfTreasures = noOfTreasures;
 	}
-	
+
 	/**
 	 * Method is called when first player tries
 	 * to join the game ( when board is null )
@@ -38,9 +38,9 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		logObject.info("Initializing the game board");
 		//Initialize board
 		board = BoardImpl.getInstance(sizeOfBoard, noOfTreasures);
-		
-	}	
-	
+
+	}
+
 	/**
 	 * Generates random location for each player
 	 * @param id : id of the player for which location is being generated
@@ -54,7 +54,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		logObject.info("Location assigned");
 		return new Location(x,y);
 	}
-	
+
 	/**
 	 * Generates random id for each player
 	 * @param
@@ -65,12 +65,12 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		Random randomGenerator = new Random();
 		return randomGenerator.nextInt(8999)+1000;
 	}
-	
-	
+
+
 	public void setFlag(boolean flag){
 		this.isTwentySecOver = flag;
 	}
-	
+
 	/**
 	 * Method that makes the server wait for twenty seconds
 	 * so that all players can join
@@ -82,12 +82,12 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		System.out.println("Joining period over");
 		setFlag(false);
 		logObject.info("Joining time over at server side");
-		
+
 		//Generating treasures at the end of 20 seconds
 		board.generateTreasures();
 		board.printCurrentBoardState();
 	}
-	
+
 	/**
 	 * Method that different clients will call to join the game
 	 * */
@@ -98,30 +98,30 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 			if(board == null) startGame();
 			//Generate random 4 digit id for new player
 			int id = generatePlayerId();
-			//Generate random location for this new player 
+			//Generate random location for this new player
 			Location location = generatePlayerLocation(id);
-			
+
 			//Setting player parameters
 			Player player = new PlayerImpl(id);
 			player.setLocation(location.getX(), location.getY());
 			player.setTreasureCount(0);
 			board.addPlayer(player);
 			logObject.info("Join request processed successfully. Player added to players list.");
-			
+			System.out.println("Status on Client side Board Size : " + board.size);
 			return board;
 			//Return location to client that called joinGame
 //			return "Game joined by player "+noOfPlayers+" with id : "+id;
 		}
 		return null;
 	}
-	
-	
+
+
 	public String testStringReponse(){
 		return "This is a message from server";
 	}
-	
+
 	public void movePlayer(){
-		
+
 	}
-	
+
 }

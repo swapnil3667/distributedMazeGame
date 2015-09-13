@@ -16,18 +16,18 @@ public class Server{
 		int noOfTreasures = s.nextInt();
 		logObject.info("Executing game!!");
 
-		System.setProperty("java.rmi.server.codebase", "file:/home/harshul/workspace/distributedMazeGame/server");
+		//System.setProperty("java.rmi.server.codebase", "file:///home/swapnil/Documents/Distributed_System/distributedMazeGame/server/");
 		ExecuteGame stub = null;
 		Registry registry = null;
 		ExecuteGameImpl obj = ExecuteGameImpl.getInstance(sizeOfBoard, noOfTreasures);
-		
+
 		try {
 			stub = (ExecuteGame) UnicastRemoteObject.exportObject(obj, 0);
 			registry = LocateRegistry.getRegistry();
 			registry.bind("Game", stub);
 			System.err.println("Server ready");
 			obj.waitTwentySeconds();
-			
+
 		} catch (Exception e) {
 			try{
 				registry.unbind("Game");

@@ -11,31 +11,31 @@ public class BoardImpl implements Board, Serializable{
 	List<Treasure> treasureList = null;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	private static Board board = null;
-	
+
 	public static Board getInstance(){
 		if (board == null){
 			board = new BoardImpl();
 		}
 		return board;
 	}
-	
+
 	private BoardImpl() {}
-	
-	
+
+
 	/**
 	 * Getter for size of board
 	 * */
 	public int getSize(){
 		return this.size;
 	}
-	
+
 	/**
 	 * Getter for no of treasures of board
 	 * */
 	public int getNoOfTreasure(){
 		return this.noOfTreasures;
 	}
-	
+
 	/**
 	 * Method to initialize board parameters.
 	 * Doing this outside constructor because
@@ -46,8 +46,8 @@ public class BoardImpl implements Board, Serializable{
 		this.size = size;
 		this.noOfTreasures = noOfTreasures;
 	}
-	
-	
+
+
 	/**
 	 * Method to add player to players list
 	 * @param player : player to be added to playersList
@@ -56,7 +56,7 @@ public class BoardImpl implements Board, Serializable{
 		if(playersList == null) playersList = new ArrayList<>();
 		playersList.add(player);
 	}
-	
+
 	/**
 	 * Method to check if randomly generated x,y for treasure
 	 * overlaps with a player's location. If yes, look for some
@@ -72,10 +72,10 @@ public class BoardImpl implements Board, Serializable{
 		}
 		return false;
 	}
-	
-	
+
+
 	/**
-	 * Method to generate random treasures with location and value 
+	 * Method to generate random treasures with location and value
 	 */
 	public void generateTreasures(){
 		logObject.info("Initialize treasures list");
@@ -92,21 +92,49 @@ public class BoardImpl implements Board, Serializable{
 		}
 		logObject.info("Treasures generated");
 	}
-	
-	
+
+
 	public void printCurrentBoardState(){
 		for(Player eachPlayer: playersList){
 			Location location = eachPlayer.getLocation();
 			System.out.println("Player ["+eachPlayer.getId()+"] is at ("+location.getX()+", "+location.getY()+")");
 		}
-		
+
 		for(Treasure eachTreasure: treasureList){
 			Location location = eachTreasure.getLocation();
 			System.out.println("Treasure [val = "+eachTreasure.getValue()+"] is at ("+location.getX()+", "+location.getY()+")");
 		}
-		
+
 	}
 
-		
-}
+	public void printBoard(){
 
+		List<List<Integer>> rowList = new ArrayList<List<Integer>>();
+		String si = new String();
+
+		for(int i = 0; i < size; i++){
+			List<Integer> l1 = new ArrayList<Integer>();
+			for(int j = 0; j < size; j++){
+					l1.add(0);
+			}
+			rowList.add(l1);
+		}
+
+		for(Player eachPlayer: playersList){
+			Location location = eachPlayer.getLocation();
+			int x  = location.getX();
+			int y  = location.getY();
+			(rowList.get(x)).set(y,1);
+		}
+
+		for (int i = 0; i < rowList.size(); i++) {
+			List<Integer> t1 = rowList.get(i);
+			for (int j = 0; j < t1.size(); j																											++) {
+				System.out.print(t1.get(j) + " ");
+			}
+			System.out.println();
+		}
+	}
+
+
+}

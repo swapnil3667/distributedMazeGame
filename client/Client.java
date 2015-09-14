@@ -15,14 +15,15 @@ public class Client {
 	try {
 		Registry registry = LocateRegistry.getRegistry(host);
 		ExecuteGame stub = (ExecuteGame) registry.lookup("Game");
-		
+
 		System.out.println(stub.testStringReponse());
 //        System.setProperty("java.rmi.server.codebase", "file:/home/swapnil/Documents/Distributed_System/distributedMazeGame/server/");
 		Board board = stub.joinGame();
 //		    System.out.println("response: "+stub.joinGame());
 		System.out.println("Status on Client side Board Size : " + board.getSize());
+    board.printBoard();
 //		    board.printCurrentBoardState();
-		
+
 		} catch (Exception e) {
 		    System.err.println("Client exception: " + e.toString());
 		    e.printStackTrace();

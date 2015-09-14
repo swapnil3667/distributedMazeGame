@@ -129,7 +129,7 @@ public class BoardImpl implements Board, Serializable{
 
 		for (int i = 0; i < rowList.size(); i++) {
 			List<Integer> t1 = rowList.get(i);
-			for (int j = 0; j < t1.size(); j																											++) {
+			for (int j = 0; j < t1.size(); j++) {
 				System.out.print(t1.get(j) + " ");
 			}
 			System.out.println();

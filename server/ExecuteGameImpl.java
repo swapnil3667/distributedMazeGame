@@ -20,16 +20,38 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	int noOfPlayers= 0;
 	boolean isTwentySecOver = false;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
-
-	public static ExecuteGameImpl getInstance(int sizeOfBoard, int noOfTreasures){
-		return new ExecuteGameImpl(sizeOfBoard, noOfTreasures);
+	private static ExecuteGame execGame = null;
+	
+	public static ExecuteGame getInstance(){
+		if(execGame  == null){
+			execGame = new ExecuteGameImpl();
+		}
+		return execGame;
 	}
 
-	public ExecuteGameImpl(int sizeOfBoard, int noOfTreasures) {
+	/*
+	 * Default constructor made private for singleton-ness*/
+	private ExecuteGameImpl() {	}
+
+	
+	public void setBoard(Board board){
+		this.board = board;
+	}
+	
+	public Board getBoard(){
+		return board;
+	}
+	
+	/**
+	 * Method to initialize attributes,
+	 * in case of singleton, this is not
+	 * done inside constructor
+	 * */
+	public void init(int sizeOfBoard, int noOfTreasures){
 		this.sizeOfBoard = sizeOfBoard;
 		this.noOfTreasures = noOfTreasures;
 	}
-
+	
 	/**
 	 * Method is called when first player tries
 	 * to join the game ( when board is null )
@@ -37,8 +59,9 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	public void startGame(){
 		logObject.info("Initializing the game board");
 		//Initialize board
-		board = BoardImpl.getInstance(sizeOfBoard, noOfTreasures);
-
+		board =  BoardImpl.getInstance();
+		board.init(this.sizeOfBoard, this.noOfTreasures);
+		logObject.info("Board initialized with board size = "+board.getSize()+" and no of treasures = "+board.getNoOfTreasure());
 	}
 
 	/**
@@ -107,7 +130,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 			player.setTreasureCount(0);
 			board.addPlayer(player);
 			logObject.info("Join request processed successfully. Player added to players list.");
-			System.out.println("Status on Client side Board Size : " + board.size);
+			System.out.println("Status on Client side Board Size : " + board.getSize());
 			return board;
 			//Return location to client that called joinGame
 //			return "Game joined by player "+noOfPlayers+" with id : "+id;

@@ -7,11 +7,12 @@ import java.util.List;
  * There will be an implementation of this as BoardImpl.java 
  * */
 public interface Board extends Serializable{
-	int size = 0;
-	int noOfTreasures = 0;
 	List<Player> playersList = null;
 	List<Treasure> treasureList = null;
 	public void generateTreasures();
 	public void addPlayer(Player player);
 	public void printCurrentBoardState();
+	public void init(int size, int noOfTreasures);
+	public int getSize();
+	public int getNoOfTreasure();
 } 

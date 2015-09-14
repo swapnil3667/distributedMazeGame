@@ -6,9 +6,6 @@ import java.io.Serializable;
  * There will be an implementation of this as TreasureImpl.java
  */
 public interface Treasure extends Serializable{
-	Location location = null;
-	int value = 0;
-	
 	public void setLocation(int x, int y);
 	public Location getLocation();
 	public void setValue(int value);

@@ -5,20 +5,48 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 public class BoardImpl implements Board, Serializable{
-	int size = 0;
-	int noOfTreasures = 0;
+	public int size = 0;
+	public int noOfTreasures = 0;
 	List<Player> playersList = null;
 	List<Treasure> treasureList = null;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
+	private static Board board = null;
 	
-	public static BoardImpl getInstance(int size, int noOfTreasures){
-		return new BoardImpl(size, noOfTreasures);
+	public static Board getInstance(){
+		if (board == null){
+			board = new BoardImpl();
+		}
+		return board;
 	}
 	
-	public BoardImpl(int size, int noOfTreasures) {
+	private BoardImpl() {}
+	
+	
+	/**
+	 * Getter for size of board
+	 * */
+	public int getSize(){
+		return this.size;
+	}
+	
+	/**
+	 * Getter for no of treasures of board
+	 * */
+	public int getNoOfTreasure(){
+		return this.noOfTreasures;
+	}
+	
+	/**
+	 * Method to initialize board parameters.
+	 * Doing this outside constructor because
+	 * this is how singleton is implemented
+	 * */
+	public void init(int size, int noOfTreasures){
+		logObject.info("Initializing board with size = "+size+" and no of treasures = "+noOfTreasures);
 		this.size = size;
 		this.noOfTreasures = noOfTreasures;
 	}
+	
 	
 	/**
 	 * Method to add player to players list
@@ -79,7 +107,6 @@ public class BoardImpl implements Board, Serializable{
 		
 	}
 
-	
-	
+		
 }
 

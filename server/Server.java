@@ -19,7 +19,8 @@ public class Server{
 		//System.setProperty("java.rmi.server.codebase", "file:///home/swapnil/Documents/Distributed_System/distributedMazeGame/server/");
 		ExecuteGame stub = null;
 		Registry registry = null;
-		ExecuteGameImpl obj = ExecuteGameImpl.getInstance(sizeOfBoard, noOfTreasures);
+		ExecuteGameImpl obj = (ExecuteGameImpl) ExecuteGameImpl.getInstance();
+		obj.init(sizeOfBoard, noOfTreasures);
 
 		try {
 			stub = (ExecuteGame) UnicastRemoteObject.exportObject(obj, 0);
@@ -27,13 +28,13 @@ public class Server{
 			registry.bind("Game", stub);
 			System.err.println("Server ready");
 			obj.waitTwentySeconds();
-
 		} catch (Exception e) {
+//				e.printStackTrace();
 			try{
 				registry.unbind("Game");
 				registry.bind("Game",stub);
 				System.err.println("Server ready");
-				obj.waitTwentySeconds();
+ 				obj.waitTwentySeconds();
 				}catch(Exception ee){
 				System.err.println("Server exception: " + ee.toString());
 				ee.printStackTrace();

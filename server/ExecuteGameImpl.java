@@ -21,6 +21,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	boolean isTwentySecOver = false;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	private static ExecuteGame execGame = null;
+	int firstPlayerId = 0;	//This is only for testing purpose
 	
 	public static ExecuteGame getInstance(){
 		if(execGame  == null){
@@ -121,6 +122,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 			if(board == null) startGame();
 			//Generate random 4 digit id for new player
 			int id = generatePlayerId();
+			firstPlayerId = id;
 			//Generate random location for this new player
 			Location location = generatePlayerLocation(id);
 
@@ -138,13 +140,29 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		return null;
 	}
 
-
+	/*THIS IS FOR TESTING PURPOSE - TO BE REMOVED*/
+	public int getFirstPlayerId(){
+		return firstPlayerId;
+	}
+	
 	public String testStringReponse(){
-		return "This is a message from server";
+		return "This is a test message from server";
 	}
 
-	public void movePlayer(){
-
+	public Board movePlayer(int id, String moveDirection){
+		System.out.println("Mode request for Player : "+id+" in direction "+moveDirection.trim()+" with length : "+moveDirection.length()+" || "+"right".length());
+		if(moveDirection.equals("right")){
+//		String s = moveDirection.trim();
+			board.updatedPlayerLocation(id, moveDirection);
+		}
+		return board;
 	}
-
 }
+
+
+
+
+
+
+
+

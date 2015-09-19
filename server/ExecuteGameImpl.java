@@ -150,11 +150,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	}
 
 	public Board movePlayer(int id, String moveDirection){
-		System.out.println("Mode request for Player : "+id+" in direction "+moveDirection.trim()+" with length : "+moveDirection.length()+" || "+"right".length());
-	//	if(moveDirection.equals("right")){
-//		String s = moveDirection.trim();
-			board.updatedPlayerLocation(id, moveDirection);
-	//	}
+		board.updatedPlayerLocation(id, moveDirection);
 		return board;
 	}
 }

@@ -179,10 +179,6 @@ public class BoardImpl implements Board, Serializable{
 	public void updatedPlayerLocation(int playerId, String moveDirection){
 		System.out.println("Inside updatePlayerLOcation : "+moveDirection.length()+" | "+moveDirection);
 		Player currPlayer = getPlayerWithId(playerId);
-//		if(moveDirection.equals("right")){
-//			System.out.println("Inside setNewLocation if condition: "+moveDirection.length()+" | "+moveDirection);
-//			currPlayer.setLocation(currPlayer.getLocation().getX(), currPlayer.getLocation().getY() + 1);
-//		}
 		setNewLocation(currPlayer, moveDirection);
 	}
 

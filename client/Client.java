@@ -8,6 +8,7 @@ import javax.swing.text.ChangedCharSetException;
 
 public class Client {
 
+	int selfId = 0;
     public Client() {}
 
     /**
@@ -71,7 +72,7 @@ public class Client {
 				//Calling move player to test
 				int id = stub.getFirstPlayerId();
 				board = stub.movePlayer(id, directionToMove);
-				System.out.println("After move");
+//				System.out.println("After move");
 				Runtime.getRuntime().exec("clear");
 				board.printBoard();
 

@@ -30,7 +30,7 @@ public class BoardImpl implements Board, Serializable{
 	}
 
 	/**
-	 * Getter for no of treasures of board
+	 * Getter for no of treasures of boardcurrPlayer.getLocation().getX()
 	 * */
 	public int getNoOfTreasure(){
 		return this.noOfTreasures;
@@ -165,16 +165,16 @@ public class BoardImpl implements Board, Serializable{
 	 * @return
 	 * */
 	public void setNewLocation(Player currPlayer, String moveDir){
-		if(moveDir.equals("up")){
+		if(moveDir.equals("up") && currPlayer.getLocation().getX() > 0){
 			currPlayer.setLocation(currPlayer.getLocation().getX() - 1, currPlayer.getLocation().getY());
 		}
-		if(moveDir.equals("down")){
+		if(moveDir.equals("down") && currPlayer.getLocation().getX() < size-1){
 			currPlayer.setLocation(currPlayer.getLocation().getX() + 1, currPlayer.getLocation().getY());
 		}
-		if(moveDir.equals("left")){
+		if(moveDir.equals("left") && currPlayer.getLocation().getY() > 0){
 			currPlayer.setLocation(currPlayer.getLocation().getX(), currPlayer.getLocation().getY() - 1);
 		}
-		if(moveDir.equals("right")){
+		if(moveDir.equals("right") && currPlayer.getLocation().getY() < size-1){
 			currPlayer.setLocation(currPlayer.getLocation().getX(), currPlayer.getLocation().getY() + 1);
 		}
 	}

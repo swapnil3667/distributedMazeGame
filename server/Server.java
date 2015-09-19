@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.logging.Logger;
+import java.util.Iterator;
+import java.util.List;
 
 public class Server{
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
@@ -27,7 +29,28 @@ public class Server{
 			registry = LocateRegistry.getRegistry();
 			registry.bind("Game", stub);
 			System.err.println("Server ready");
+
 			obj.waitTwentySeconds();
+			System.out.print("Value of Twentysecflag: " + obj.isTwentySecOver);
+			if(obj.isTwentySecOver == false){
+
+					Iterator it = obj.list.iterator();
+					int i =1;
+					while (it.hasNext()){
+							String mesg = ("Client "+ i +" has been registered");
+							// Send the alert to the given user.
+							// If this fails, remove them from the list
+							try {
+								((ClientInterface)it.next()).alert(mesg);
+							} catch (RemoteException re) {
+			                    System.out.println(
+									"Exception alerting client, removing it.");
+								System.out.println(re);
+								it.remove();
+							}
+						i++;
+					}
+			}
 		} catch (Exception e) {
 //				e.printStackTrace();
 			try{
@@ -35,6 +58,27 @@ public class Server{
 				registry.bind("Game",stub);
 				System.err.println("Server ready");
  				obj.waitTwentySeconds();
+				System.out.print("Value of Twentysecflag: " + obj.isTwentySecOver);
+				if(obj.isTwentySecOver == false){
+
+						Iterator it = obj.list.iterator();
+						int i =1;
+						while (it.hasNext()){
+								String mesg = ("Client "+ i +" has been registered");
+								// Send the alert to the given user.
+								// If this fails, remove them from the list
+								try {
+									((ClientInterface)it.next()).alert(mesg);
+								} catch (RemoteException re) {
+														System.out.println(
+										"Exception alerting client, removing it.");
+									System.out.println(re);
+									it.remove();
+								}
+							i++;
+						}
+				}
+
 				}catch(Exception ee){
 				System.err.println("Server exception: " + ee.toString());
 				ee.printStackTrace();

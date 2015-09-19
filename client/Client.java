@@ -3,11 +3,15 @@ import java.io.IOException;
 import java.io.Reader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.io.Serializable;
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
 
-public class Client {
+import javax.swing.text.ChangedCharSetException;
 
-	int selfId = 0;
-    public Client() {}
+public class Client extends UnicastRemoteObject implements ClientInterface {
+    int selfId = 0;
+    public Client() throws RemoteException{}
 
     /**
      * Method to change console mode from
@@ -24,6 +28,10 @@ public class Client {
     public void resetConsoleMode() throws InterruptedException, IOException{
     	String[] cmd = new String[] {"/bin/sh", "-c", "stty sane </dev/tty"};
 		Runtime.getRuntime().exec(cmd).waitFor();
+    }
+
+    public void alert(String message){
+      System.out.println(message);
     }
 
     /**
@@ -43,12 +51,12 @@ public class Client {
     /**
      * This is test function that populates self id
      * with first id in board.playerList.get(0) because
-     * there is no call back functionality as of yet 
+     * there is no call back functionality as of yet
      * */
     public void testFunction_populateSelfId(Board board){
     	selfId = 1234;
     }
-    
+
     public static void main(String[] args) throws InterruptedException, IOException {
 
     Client clientObj = new Client();
@@ -61,12 +69,12 @@ public class Client {
 	try {
 		Registry registry = LocateRegistry.getRegistry(host);
 		ExecuteGame stub = (ExecuteGame) registry.lookup("Game");
-		Board board = stub.joinGame();
-		
+		Board board = stub.joinGame(clientObj);
+
 		/*TO BE REMOVED*/
 		clientObj.testFunction_populateSelfId(board);
 		/*TO BE REMOVED*/
-		
+
 		board.printBoard(clientObj.selfId);
 		while(true){
 
@@ -79,7 +87,7 @@ public class Client {
 					if(consoleInput == 120) break; //breaks on 'X' press
 
 				String directionToMove = clientObj.getDirectionOnKeyPress(consoleInput);
-				
+
 				//Calling move player to test
 				int id = stub.getFirstPlayerId();
 				board = stub.movePlayer(id, directionToMove);

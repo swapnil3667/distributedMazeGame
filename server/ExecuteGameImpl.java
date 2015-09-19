@@ -2,6 +2,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
+import java.util.List;
 /**
  * This is the class where logic of the game will go.
  * Methods like movePlayer and startGame will be defined here.
@@ -22,6 +23,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	private static ExecuteGame execGame = null;
 	int firstPlayerId = 0;	//This is only for testing purpose
+	List<ClientInterface> list = new ArrayList<ClientInterface>();
 
 	public static ExecuteGame getInstance(){
 		if(execGame  == null){
@@ -115,7 +117,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	/**
 	 * Method that different clients will call to join the game
 	 * */
-	public Board joinGame(){
+	public Board joinGame(ClientInterface client){
 		if(isTwentySecOver){
 			logObject.info("Join game request received by player number "+(++noOfPlayers));
 			//When the first player calls this, start game is called.
@@ -126,6 +128,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 			firstPlayerId = 1234;	//HARD CODED ID TO TEST
 			//Generate random location for this new player
 			Location location = generatePlayerLocation(id);
+			list.add(client);
 
 			//Setting player parameters
 			Player player = new PlayerImpl(id);

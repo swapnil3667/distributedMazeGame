@@ -4,8 +4,6 @@ import java.io.Reader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import javax.swing.text.ChangedCharSetException;
-
 public class Client {
 
 	int selfId = 0;
@@ -42,14 +40,21 @@ public class Client {
     	return null;
     }
 
+    /**
+     * This is test function that populates self id
+     * with first id in board.playerList.get(0) because
+     * there is no call back functionality as of yet 
+     * */
+    public void testFunction_populateSelfId(Board board){
+    	selfId = 1234;
+    }
+    
     public static void main(String[] args) throws InterruptedException, IOException {
 
     Client clientObj = new Client();
 
-    //Code to convert console mode for un-buffered input
 
 	String host = (args.length < 1) ? null : args[0];
-//	System.out.println("host is   " +  host);
 	if (System.getSecurityManager() == null) {
 		System.setSecurityManager(new SecurityManager());
 	}
@@ -57,7 +62,12 @@ public class Client {
 		Registry registry = LocateRegistry.getRegistry(host);
 		ExecuteGame stub = (ExecuteGame) registry.lookup("Game");
 		Board board = stub.joinGame();
-		board.printBoard();
+		
+		/*TO BE REMOVED*/
+		clientObj.testFunction_populateSelfId(board);
+		/*TO BE REMOVED*/
+		
+		board.printBoard(clientObj.selfId);
 		while(true){
 
 				clientObj.changeConsoleModeStty();
@@ -69,13 +79,13 @@ public class Client {
 					if(consoleInput == 120) break; //breaks on 'X' press
 
 				String directionToMove = clientObj.getDirectionOnKeyPress(consoleInput);
+				
 				//Calling move player to test
 				int id = stub.getFirstPlayerId();
 				board = stub.movePlayer(id, directionToMove);
 //				System.out.println("After move");
 				Runtime.getRuntime().exec("clear");
-				System.out.println();
-				board.printBoard();
+				board.printBoard(clientObj.selfId);
 
 			}
 		} catch (Exception e) {

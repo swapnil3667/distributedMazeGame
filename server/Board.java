@@ -16,7 +16,7 @@ public interface Board extends Serializable{
 	public void init(int size, int noOfTreasures);
 	public int getSize();
 	public int getNoOfTreasure();
-	public void printBoard();
+	public void printBoard(int selfId);
 	public void updatedPlayerLocation(int playerId, String moveDirection);
 	public void setNewLocation(Player currPlayer, String moveDir);
 }

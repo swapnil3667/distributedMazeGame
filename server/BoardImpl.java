@@ -119,15 +119,16 @@ public class BoardImpl implements Board, Serializable{
 
 	}
 
-	public void printBoard(){
+	public void printBoard(int selfId){
 		
-		List<List<Integer>> rowList = new ArrayList<List<Integer>>();
+		List<List<Character>> rowList = new ArrayList<List<Character>>();
 		String si = new String();
+		Player callingPlayer = getPlayerWithId(selfId);
 		System.out.println();
 		for(int i = 0; i < size; i++){
-			List<Integer> l1 = new ArrayList<Integer>();
+			List<Character> l1 = new ArrayList<Character>();
 			for(int j = 0; j < size; j++){
-					l1.add(0);
+				l1.add('0');
 			}
 			rowList.add(l1);
 		}
@@ -136,11 +137,20 @@ public class BoardImpl implements Board, Serializable{
 			Location location = eachPlayer.getLocation();
 			int x  = location.getX();
 			int y  = location.getY();
-			(rowList.get(x)).set(y,1);
+			if(callingPlayer.getLocation().getX() == x && callingPlayer.getLocation().getY() == y){
+				(rowList.get(x)).set(y,'S');
+			}else (rowList.get(x)).set(y,'P');
 		}
-
+		/*
+		for(Treasure eachTreasure: treasureList){
+			Location location = eachTreasure.getLocation();
+			int x  = location.getX();
+			int y  = location.getY();
+			(rowList.get(x)).set(y,'T');
+		}*/
+		
 		for (int i = 0; i < rowList.size(); i++) {
-			List<Integer> t1 = rowList.get(i);
+			List<Character> t1 = rowList.get(i);
 			for (int j = 0; j < t1.size(); j++) {
 				System.out.print(t1.get(j) + " ");
 			}

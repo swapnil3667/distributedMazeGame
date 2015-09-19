@@ -122,7 +122,8 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 			if(board == null) startGame();
 			//Generate random 4 digit id for new player
 			int id = generatePlayerId();
-			firstPlayerId = id;
+			id = 1234;				//HARD CODED ID TO TEST
+			firstPlayerId = 1234;	//HARD CODED ID TO TEST
 			//Generate random location for this new player
 			Location location = generatePlayerLocation(id);
 

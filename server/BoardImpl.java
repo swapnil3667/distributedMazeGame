@@ -104,8 +104,8 @@ public class BoardImpl implements Board, Serializable{
 		}
 		return null;
 	}
-	
-	
+
+
 	public void printCurrentBoardState(){
 		for(Player eachPlayer: playersList){
 			Location location = eachPlayer.getLocation();
@@ -147,35 +147,34 @@ public class BoardImpl implements Board, Serializable{
 			System.out.println();
 		}
 	}
-	
+
 	/**
 	 * updates location for curr player based on moving direction
 	 * @param currPlayer : current location of player
-	 * @param moveDir : Direction in which move is requested 
-	 * @return 
+	 * @param moveDir : Direction in which move is requested
+	 * @return
 	 * */
 	public void setNewLocation(Player currPlayer, String moveDir){
 		System.out.println("Inside setNewLocation: "+moveDir.length()+" | "+moveDir);
-//		if(moveDir.equals("up")){
-//			currPlayer.setLocation(currPlayer.getLocation().getX() - 1, currPlayer.getLocation().getY());
-//		}
-//		else if(moveDir.equals("down")){
-//			currPlayer.setLocation(currPlayer.getLocation().getX() + 1, currPlayer.getLocation().getY());
-//		}
-//		else if(moveDir.equals("left")){
-//			currPlayer.setLocation(currPlayer.getLocation().getX(), currPlayer.getLocation().getY() - 1);
-//		}
+		if(moveDir.equals("up")){
+			currPlayer.setLocation(currPlayer.getLocation().getX() - 1, currPlayer.getLocation().getY());
+		}
+		if(moveDir.equals("down")){
+			currPlayer.setLocation(currPlayer.getLocation().getX() + 1, currPlayer.getLocation().getY());
+		}
+		if(moveDir.equals("left")){
+			currPlayer.setLocation(currPlayer.getLocation().getX(), currPlayer.getLocation().getY() - 1);
+		}
 		if(moveDir.equals("right")){
-			System.out.println("Inside setNewLocation if condition: "+moveDir.length()+" | "+moveDir);
 			currPlayer.setLocation(currPlayer.getLocation().getX(), currPlayer.getLocation().getY() + 1);
 		}
 	}
-	
-	
+
+
 	/**
 	 * Update location of player with id
 	 * @param playerId : id of player to be moved
-	 * @param moveDirection : direction in which player is to be moved 
+	 * @param moveDirection : direction in which player is to be moved
 	 * */
 	public void updatedPlayerLocation(int playerId, String moveDirection){
 		System.out.println("Inside updatePlayerLOcation : "+moveDirection.length()+" | "+moveDirection);

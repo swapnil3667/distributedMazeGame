@@ -5,14 +5,19 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.io.Serializable;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Logger;
 import java.rmi.RemoteException;
 
-import javax.swing.text.ChangedCharSetException;
 
 public class Client extends UnicastRemoteObject implements ClientInterface {
     int selfId = 0;
+    private static Logger logObject = Logger.getLogger(Client.class.getName());
     public Client() throws RemoteException{}
 
+    public void setSelfId(int id) throws RemoteException {
+		this.selfId = id;
+	}
+    
     /**
      * Method to change console mode from
      * buffered to real time
@@ -48,14 +53,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     	return null;
     }
 
-    /**
-     * This is test function that populates self id
-     * with first id in board.playerList.get(0) because
-     * there is no call back functionality as of yet
-     * */
-    public void testFunction_populateSelfId(Board board){
-    	selfId = 1234;
-    }
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
@@ -70,11 +67,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 		Registry registry = LocateRegistry.getRegistry(host);
 		ExecuteGame stub = (ExecuteGame) registry.lookup("Game");
 		Board board = stub.joinGame(clientObj);
-
-		/*TO BE REMOVED*/
-		clientObj.testFunction_populateSelfId(board);
-		/*TO BE REMOVED*/
-
+		logObject.info("Request processed at server side, id assigned : "+clientObj.selfId);
+		
 		board.printBoard(clientObj.selfId);
 		while(true){
 
@@ -89,8 +83,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 				String directionToMove = clientObj.getDirectionOnKeyPress(consoleInput);
 
 				//Calling move player to test
-				int id = stub.getFirstPlayerId();
-				board = stub.movePlayer(id, directionToMove);
+				board = stub.movePlayer(clientObj.selfId, directionToMove);
 //				System.out.println("After move");
 				Runtime.getRuntime().exec("clear");
 				board.printBoard(clientObj.selfId);
@@ -101,4 +94,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 		    e.printStackTrace();
 		}
     }
+
+	
 }

@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -23,7 +24,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	private static ExecuteGame execGame = null;
 	int firstPlayerId = 0;	//This is only for testing purpose
-	List<ClientInterface> list = new ArrayList<ClientInterface>();
+	List<ClientInterface> clientList = new ArrayList<ClientInterface>();
 
 	public static ExecuteGame getInstance(){
 		if(execGame  == null){
@@ -116,19 +117,20 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 
 	/**
 	 * Method that different clients will call to join the game
+	 * @throws RemoteException 
 	 * */
-	public Board joinGame(ClientInterface client){
+	public Board joinGame(ClientInterface client) throws RemoteException{
 		if(isTwentySecOver){
 			logObject.info("Join game request received by player number "+(++noOfPlayers));
 			//When the first player calls this, start game is called.
 			if(board == null) startGame();
 			//Generate random 4 digit id for new player
 			int id = generatePlayerId();
-			id = 1234;				//HARD CODED ID TO TEST
-			firstPlayerId = 1234;	//HARD CODED ID TO TEST
+			client.setSelfId(id);
 			//Generate random location for this new player
 			Location location = generatePlayerLocation(id);
-			list.add(client);
+			clientList.add(client);
+			
 
 			//Setting player parameters
 			Player player = new PlayerImpl(id);
@@ -136,7 +138,6 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 			player.setTreasureCount(0);
 			board.addPlayer(player);
 			logObject.info("Join request processed successfully. Player added to players list.");
-			System.out.println("Status on Client side Board Size : " + board.getSize());
 			return board;
 			//Return location to client that called joinGame
 //			return "Game joined by player "+noOfPlayers+" with id : "+id;
@@ -144,10 +145,6 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		return null;
 	}
 
-	/*THIS IS FOR TESTING PURPOSE - TO BE REMOVED*/
-	public int getFirstPlayerId(){
-		return firstPlayerId;
-	}
 
 	public String testStringReponse(){
 		return "This is a test message from server";

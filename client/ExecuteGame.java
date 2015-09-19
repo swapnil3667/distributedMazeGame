@@ -12,5 +12,4 @@ public interface ExecuteGame extends Remote {
 	public String testStringReponse() throws RemoteException;
 	public Board getBoard() throws RemoteException;
 	public void setBoard(Board board)  throws RemoteException;
-	public int getFirstPlayerId() throws RemoteException;
 }

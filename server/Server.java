@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.logging.Logger;
-import java.util.Iterator;
-import java.util.List;
 
 public class Server{
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
@@ -21,32 +19,31 @@ public class Server{
 		//System.setProperty("java.rmi.server.codebase", "file:///home/swapnil/Documents/Distributed_System/distributedMazeGame/server/");
 		ExecuteGame stub = null;
 		Registry registry = null;
-		ExecuteGameImpl obj = (ExecuteGameImpl) ExecuteGameImpl.getInstance();
-		obj.init(sizeOfBoard, noOfTreasures);
+		ExecuteGameImpl executeGameObj = (ExecuteGameImpl) ExecuteGameImpl.getInstance();
+		executeGameObj.init(sizeOfBoard, noOfTreasures);
 
 		try {
-			stub = (ExecuteGame) UnicastRemoteObject.exportObject(obj, 0);
+			stub = (ExecuteGame) UnicastRemoteObject.exportObject(executeGameObj, 0);
 			registry = LocateRegistry.getRegistry();
 			registry.bind("Game", stub);
 			System.err.println("Server ready");
 
-			obj.waitTwentySeconds();
-			System.out.print("Value of Twentysecflag: " + obj.isTwentySecOver);
-			if(obj.isTwentySecOver == false){
+			executeGameObj.waitTwentySeconds();
+			System.out.print("Value of Twentysecflag: " + executeGameObj.isTwentySecOver);
+			if(executeGameObj.isTwentySecOver == false){
 
-					Iterator it = obj.list.iterator();
 					int i =1;
-					while (it.hasNext()){
+					for( ClientInterface eachClient : executeGameObj.clientList){
 							String mesg = ("Client "+ i +" has been registered");
 							// Send the alert to the given user.
 							// If this fails, remove them from the list
 							try {
-								((ClientInterface)it.next()).alert(mesg);
+								eachClient.alert(mesg);
 							} catch (RemoteException re) {
 			                    System.out.println(
 									"Exception alerting client, removing it.");
 								System.out.println(re);
-								it.remove();
+								executeGameObj.clientList.remove(eachClient);
 							}
 						i++;
 					}
@@ -57,26 +54,25 @@ public class Server{
 				registry.unbind("Game");
 				registry.bind("Game",stub);
 				System.err.println("Server ready");
- 				obj.waitTwentySeconds();
-				System.out.print("Value of Twentysecflag: " + obj.isTwentySecOver);
-				if(obj.isTwentySecOver == false){
+ 				executeGameObj.waitTwentySeconds();
+				System.out.print("Value of Twentysecflag: " + executeGameObj.isTwentySecOver);
+				if(executeGameObj.isTwentySecOver == false){
 
-						Iterator it = obj.list.iterator();
-						int i =1;
-						while (it.hasNext()){
-								String mesg = ("Client "+ i +" has been registered");
-								// Send the alert to the given user.
-								// If this fails, remove them from the list
-								try {
-									((ClientInterface)it.next()).alert(mesg);
-								} catch (RemoteException re) {
-														System.out.println(
-										"Exception alerting client, removing it.");
-									System.out.println(re);
-									it.remove();
-								}
-							i++;
-						}
+						int i = 1;
+						for( ClientInterface eachClient : executeGameObj.clientList){
+							String mesg = ("Client "+ i +" has been registered");
+							// Send the alert to the given user.
+							// If this fails, remove them from the list
+							try {
+								eachClient.alert(mesg);
+							} catch (RemoteException re) {
+			                    System.out.println(
+									"Exception alerting client, removing it.");
+								System.out.println(re);
+								executeGameObj.clientList.remove(eachClient);
+							}
+						i++;
+					}						
 				}
 
 				}catch(Exception ee){

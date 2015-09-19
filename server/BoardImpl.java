@@ -141,13 +141,13 @@ public class BoardImpl implements Board, Serializable{
 				(rowList.get(x)).set(y,'S');
 			}else (rowList.get(x)).set(y,'P');
 		}
-		/*
+		
 		for(Treasure eachTreasure: treasureList){
 			Location location = eachTreasure.getLocation();
 			int x  = location.getX();
 			int y  = location.getY();
 			(rowList.get(x)).set(y,'T');
-		}*/
+		}
 		
 		for (int i = 0; i < rowList.size(); i++) {
 			List<Character> t1 = rowList.get(i);

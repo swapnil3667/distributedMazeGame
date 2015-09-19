@@ -103,16 +103,16 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	 * so that all players can join
 	 * */
 	public void waitTwentySeconds(){
-		setFlag(true);
+		setFlag(false);
 		long end = System.currentTimeMillis() + 20000;
 		while(System.currentTimeMillis() < end){} 	//runs for 20 sec
 		System.out.println("Joining period over");
-		setFlag(false);
+		setFlag(true);
 		logObject.info("Joining time over at server side");
 
 		//Generating treasures at the end of 20 seconds
-		board.generateTreasures();
-		board.printCurrentBoardState();
+//		board.generateTreasures();
+//		board.printCurrentBoardState();
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	 * @throws RemoteException 
 	 * */
 	public Board joinGame(ClientInterface client) throws RemoteException{
-		if(isTwentySecOver){
+		if(!isTwentySecOver){
 			logObject.info("Join game request received by player number "+(++noOfPlayers));
 			//When the first player calls this, start game is called.
 			if(board == null) startGame();

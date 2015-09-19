@@ -11,9 +11,15 @@ import java.rmi.RemoteException;
 
 public class Client extends UnicastRemoteObject implements ClientInterface {
     int selfId = 0;
+    boolean didServerCallBack = false;
     private static Logger logObject = Logger.getLogger(Client.class.getName());
+    
     public Client() throws RemoteException{}
 
+    public int getSelfId() throws RemoteException{
+    	return selfId;
+    }
+    
     public void setSelfId(int id) throws RemoteException {
 		this.selfId = id;
 	}
@@ -35,8 +41,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 		Runtime.getRuntime().exec(cmd).waitFor();
     }
 
-    public void alert(String message){
-      System.out.println(message);
+    public void alert(Board board){
+      System.out.println("Call Back : This is your starting board\n");
+//      board.printBoard(selfId);
+      didServerCallBack = true;
     }
 
     /**
@@ -52,7 +60,12 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     	else if(consoleInput == 100) return "right";
     	return null;
     }
-
+    
+    public void waitForServerCallBack(){
+    	while(!didServerCallBack){
+    		System.out.println(didServerCallBack);
+    	}
+    }
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
@@ -68,8 +81,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 		ExecuteGame stub = (ExecuteGame) registry.lookup("Game");
 		Board board = stub.joinGame(clientObj);
 		logObject.info("Request processed at server side, id assigned : "+clientObj.selfId);
-		
+		clientObj.waitForServerCallBack();
 		board.printBoard(clientObj.selfId);
+		
 		while(true){
 
 				clientObj.changeConsoleModeStty();

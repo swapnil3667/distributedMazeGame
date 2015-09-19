@@ -74,6 +74,7 @@ public class Client {
 				board = stub.movePlayer(id, directionToMove);
 //				System.out.println("After move");
 				Runtime.getRuntime().exec("clear");
+				System.out.println();
 				board.printBoard();
 
 			}

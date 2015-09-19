@@ -120,10 +120,10 @@ public class BoardImpl implements Board, Serializable{
 	}
 
 	public void printBoard(){
-
+		
 		List<List<Integer>> rowList = new ArrayList<List<Integer>>();
 		String si = new String();
-
+		System.out.println();
 		for(int i = 0; i < size; i++){
 			List<Integer> l1 = new ArrayList<Integer>();
 			for(int j = 0; j < size; j++){
@@ -131,7 +131,7 @@ public class BoardImpl implements Board, Serializable{
 			}
 			rowList.add(l1);
 		}
-
+		
 		for(Player eachPlayer: playersList){
 			Location location = eachPlayer.getLocation();
 			int x  = location.getX();
@@ -155,7 +155,6 @@ public class BoardImpl implements Board, Serializable{
 	 * @return
 	 * */
 	public void setNewLocation(Player currPlayer, String moveDir){
-		System.out.println("Inside setNewLocation: "+moveDir.length()+" | "+moveDir);
 		if(moveDir.equals("up")){
 			currPlayer.setLocation(currPlayer.getLocation().getX() - 1, currPlayer.getLocation().getY());
 		}
@@ -177,7 +176,6 @@ public class BoardImpl implements Board, Serializable{
 	 * @param moveDirection : direction in which player is to be moved
 	 * */
 	public void updatedPlayerLocation(int playerId, String moveDirection){
-		System.out.println("Inside updatePlayerLOcation : "+moveDirection.length()+" | "+moveDirection);
 		Player currPlayer = getPlayerWithId(playerId);
 		setNewLocation(currPlayer, moveDirection);
 	}

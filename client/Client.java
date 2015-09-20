@@ -13,6 +13,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     int selfId = 0;
     boolean didServerCallBack = false;
     private static Logger logObject = Logger.getLogger(Client.class.getName());
+    Board board = null;
     
     public Client() throws RemoteException{}
 
@@ -44,6 +45,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     public void alert(Board board){
       System.out.println("Call Back : This is your starting board\n");
 //      board.printBoard(selfId);
+      this.board = board;
       didServerCallBack = true;
     }
 
@@ -79,10 +81,11 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 	try {
 		Registry registry = LocateRegistry.getRegistry(host);
 		ExecuteGame stub = (ExecuteGame) registry.lookup("Game");
-		Board board = stub.joinGame(clientObj);
-		logObject.info("Request processed at server side, id assigned : "+clientObj.selfId);
+		if(stub.joinGame(clientObj)){
+			logObject.info("Request processed at server side, id assigned : "+clientObj.selfId);
+		}
 		clientObj.waitForServerCallBack();
-		board.printBoard(clientObj.selfId);
+		clientObj.board.printBoard(clientObj.selfId);
 		
 		while(true){
 
@@ -97,10 +100,16 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 				String directionToMove = clientObj.getDirectionOnKeyPress(consoleInput);
 
 				//Calling move player to test
-				board = stub.movePlayer(clientObj.selfId, directionToMove);
+				clientObj.board = stub.movePlayer(clientObj.selfId, directionToMove);
 //				System.out.println("After move");
 				Runtime.getRuntime().exec("clear");
-				board.printBoard(clientObj.selfId);
+				clientObj.board.printBoard(clientObj.selfId);
+				if(clientObj.board.getIsGameOverFlag()){
+					logObject.info("game over");
+					System.out.println("All treasures taken, game is over");
+					clientObj.board.printFinalResultForPlayers(clientObj.getSelfId());
+					break;
+				}
 
 			}
 		} catch (Exception e) {

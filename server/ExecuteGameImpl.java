@@ -21,6 +21,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	int noOfTreasures = 0;
 	int noOfPlayers= 0;
 	boolean isTwentySecOver = false;
+	boolean areAllTreasuresTaken = false;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	private static ExecuteGame execGame = null;
 	int firstPlayerId = 0;	//This is only for testing purpose
@@ -119,7 +120,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	 * Method that different clients will call to join the game
 	 * @throws RemoteException 
 	 * */
-	public Board joinGame(ClientInterface client) throws RemoteException{
+	public boolean joinGame(ClientInterface client) throws RemoteException{
 		if(!isTwentySecOver){
 			logObject.info("Join game request received by player number "+(++noOfPlayers));
 			//When the first player calls this, start game is called.
@@ -138,11 +139,11 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 			player.setTreasureCount(0);
 			board.addPlayer(player);
 			logObject.info("Join request processed successfully. Player added to players list.");
-			return board;
+			return true;
 			//Return location to client that called joinGame
 //			return "Game joined by player "+noOfPlayers+" with id : "+id;
 		}
-		return null;
+		return false;
 	}
 
 
@@ -151,7 +152,14 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	}
 
 	public Board movePlayer(int id, String moveDirection){
-		board.updatedPlayerLocation(id, moveDirection);
+		if(board.getTreasureListCurrentSize() != 0){
+			board.updatedPlayerLocation(id, moveDirection);
+		}else {
+			logObject.info("All treasure taken, Game Over!");
+			areAllTreasuresTaken = true;
+			board.setIsGameOverFlag(true);
+			board.printFinalResultForServer();
+		}
 		return board;
 	}
 }

@@ -1,15 +1,16 @@
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+
 
 public class BoardImpl implements Board, Serializable{
 	public int size = 0;
 	public int noOfTreasures = 0;
 	List<Player> playersList = null;
 	List<Treasure> treasureList = null;
+	boolean isGameOver = false;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	private static Board board = null;
 
@@ -58,6 +59,20 @@ public class BoardImpl implements Board, Serializable{
 		playersList.add(player);
 	}
 
+	/**
+	 * set game over flag
+	 * */
+	public void setIsGameOverFlag(boolean flag){
+		isGameOver = flag;
+	}
+	
+	/**
+	 * get current state of game over
+	 * flag
+	 * */
+	public boolean getIsGameOverFlag(){
+		return isGameOver;
+	}
 	
 	/**
 	 * Method to add treasures to treasures list
@@ -68,6 +83,13 @@ public class BoardImpl implements Board, Serializable{
 		treasureList.add(treasure);
 	}
 	
+	/**
+	 * method to get remaining treasure count
+	 * @return sizeTreasureList
+	 * */
+	public int getTreasureListCurrentSize(){
+		return treasureList.size();
+	}
 	
 	/**
 	 * Method to check if randomly generated x,y for treasure
@@ -129,7 +151,6 @@ public class BoardImpl implements Board, Serializable{
 			Location location = eachTreasure.getLocation();
 			System.out.println("Treasure [val = "+eachTreasure.getValue()+"] is at ("+location.getX()+", "+location.getY()+")");
 		}
-
 	}
 
 	public void printBoard(int selfId){
@@ -174,6 +195,33 @@ public class BoardImpl implements Board, Serializable{
 	}
 
 	/**
+	 * method to print final result
+	 * at client side, after game is over
+	 * */
+	public void printFinalResultForPlayers(int callingPlayerId){
+		logObject.info("Printing game results!");
+		System.out.println("\n==================================*RESULT*==================================");
+		System.out.println("Your score is : "+getPlayerWithId(callingPlayerId).getTreasureCount());
+		for(Player eachPlayer : playersList){
+			if(eachPlayer.getId() != callingPlayerId){
+				System.out.println("Player with id "+eachPlayer.getId()+" scored "+eachPlayer.getTreasureCount());
+			}
+		}
+	}
+	
+	/**
+	 * method to print final result at server
+	 * side
+	 * */
+	public void printFinalResultForServer(){
+		logObject.info("Printing game results!");
+		System.out.println("\n==================================*RESULT*==================================");
+		for(Player eachPlayer : playersList){
+				System.out.println("Player with id "+eachPlayer.getId()+" scored "+eachPlayer.getTreasureCount());
+		}
+	}
+	
+	/**
 	 * method to check if new location of player overlaps with 
 	 * any of the treasure's location, if yes, remove treasure
 	 * and increase treasureCount for that player
@@ -181,14 +229,6 @@ public class BoardImpl implements Board, Serializable{
 	 * @param player : player for which location is being updated 
 	 * */
 	public void checkPlayerOverlapwTreasure(Location location, Player player){
-		/*Iterator<Treasure> treasureListIter = treasureList.iterator();
-		while(treasureListIter.hasNext()){
-			if(treasureListIter.next().getLocation().getX() == location.getX() && treasureListIter.next().getLocation().getY() == location.getY()){
-				logObject.info("Player "+player.getId()+" got treasure ("+location.getX()+", "+location.getY()+")");
-				player.setTreasureCount(player.getTreasureCount() + treasureListIter.next().getValue());
-				treasureListIter.remove();
-			}
-		}*/
 		Treasure toRemove = new TreasureImpl();
 		for(Treasure eachTreasure : treasureList){
 			if(eachTreasure.getLocation().getX() == location.getX() && eachTreasure.getLocation().getY() == location.getY()){
@@ -239,8 +279,8 @@ public class BoardImpl implements Board, Serializable{
 	 * @param moveDirection : direction in which player is to be moved
 	 * */
 	public void updatedPlayerLocation(int playerId, String moveDirection){
-		Player currPlayer = getPlayerWithId(playerId);
-		setNewLocation(currPlayer, moveDirection);
+			Player currPlayer = getPlayerWithId(playerId);
+			setNewLocation(currPlayer, moveDirection);
 	}
 
 }

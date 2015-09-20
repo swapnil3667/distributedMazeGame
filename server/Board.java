@@ -21,4 +21,9 @@ public interface Board extends Serializable{
 	public void updatedPlayerLocation(int playerId, String moveDirection);
 	public void setNewLocation(Player currPlayer, String moveDir);
 	public void checkPlayerOverlapwTreasure(Location location, Player player);
+	public int getTreasureListCurrentSize();
+	public void setIsGameOverFlag(boolean flag);
+	public boolean getIsGameOverFlag();
+	public void printFinalResultForPlayers(int callingPlayerId);
+	public void printFinalResultForServer();
 }

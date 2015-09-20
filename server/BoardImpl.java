@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -154,6 +155,7 @@ public class BoardImpl implements Board, Serializable{
 			}else (rowList.get(x)).set(y,'P');
 		}
 		if(treasureList != null){
+			logObject.info("Current number of treasures : "+treasureList.size());
 			for(Treasure eachTreasure: treasureList){
 				Location location = eachTreasure.getLocation();
 				int x  = location.getX();
@@ -172,23 +174,61 @@ public class BoardImpl implements Board, Serializable{
 	}
 
 	/**
+	 * method to check if new location of player overlaps with 
+	 * any of the treasure's location, if yes, remove treasure
+	 * and increase treasureCount for that player
+	 * @param location : new location of a player
+	 * @param player : player for which location is being updated 
+	 * */
+	public void checkPlayerOverlapwTreasure(Location location, Player player){
+		/*Iterator<Treasure> treasureListIter = treasureList.iterator();
+		while(treasureListIter.hasNext()){
+			if(treasureListIter.next().getLocation().getX() == location.getX() && treasureListIter.next().getLocation().getY() == location.getY()){
+				logObject.info("Player "+player.getId()+" got treasure ("+location.getX()+", "+location.getY()+")");
+				player.setTreasureCount(player.getTreasureCount() + treasureListIter.next().getValue());
+				treasureListIter.remove();
+			}
+		}*/
+		Treasure toRemove = new TreasureImpl();
+		for(Treasure eachTreasure : treasureList){
+			if(eachTreasure.getLocation().getX() == location.getX() && eachTreasure.getLocation().getY() == location.getY()){
+				logObject.info("Player "+player.getId()+" got treasure ("+location.getX()+", "+location.getY()+")");
+				player.setTreasureCount(player.getTreasureCount() + eachTreasure.getValue());
+				toRemove = eachTreasure;
+			}
+		}
+		
+		treasureList.remove(toRemove);
+	}
+	
+	
+	/**
 	 * updates location for curr player based on moving direction
 	 * @param currPlayer : current location of player
 	 * @param moveDir : Direction in which move is requested
 	 * @return
 	 * */
 	public void setNewLocation(Player currPlayer, String moveDir){
+		Location newLocation = null;
 		if(moveDir.equals("up") && currPlayer.getLocation().getX() > 0){
-			currPlayer.setLocation(currPlayer.getLocation().getX() - 1, currPlayer.getLocation().getY());
+			newLocation = new Location(currPlayer.getLocation().getX() - 1, currPlayer.getLocation().getY());
+			checkPlayerOverlapwTreasure(newLocation, currPlayer);
+			currPlayer.setLocation(newLocation);
 		}
 		if(moveDir.equals("down") && currPlayer.getLocation().getX() < size-1){
-			currPlayer.setLocation(currPlayer.getLocation().getX() + 1, currPlayer.getLocation().getY());
+			newLocation = new Location(currPlayer.getLocation().getX() + 1, currPlayer.getLocation().getY());
+			checkPlayerOverlapwTreasure(newLocation, currPlayer);
+			currPlayer.setLocation(newLocation);
 		}
 		if(moveDir.equals("left") && currPlayer.getLocation().getY() > 0){
-			currPlayer.setLocation(currPlayer.getLocation().getX(), currPlayer.getLocation().getY() - 1);
+			newLocation = new Location(currPlayer.getLocation().getX() , currPlayer.getLocation().getY()-1);
+			checkPlayerOverlapwTreasure(newLocation, currPlayer);
+			currPlayer.setLocation(newLocation);
 		}
 		if(moveDir.equals("right") && currPlayer.getLocation().getY() < size-1){
-			currPlayer.setLocation(currPlayer.getLocation().getX(), currPlayer.getLocation().getY() + 1);
+			newLocation = new Location(currPlayer.getLocation().getX(), currPlayer.getLocation().getY()+1);
+			checkPlayerOverlapwTreasure(newLocation, currPlayer);
+			currPlayer.setLocation(newLocation);
 		}
 	}
 

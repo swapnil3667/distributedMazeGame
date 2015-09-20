@@ -8,8 +8,8 @@ public class PlayerImpl implements Player,Serializable {
 	public PlayerImpl(int id) {
 		this.id = id;
 	}
-	public void setLocation(int x, int y){
-		location = new Location(x,y);
+	public void setLocation(Location location){
+		this.location = location;
 	}
 	
 	public Location getLocation(){

@@ -6,7 +6,7 @@ import java.io.Serializable;
  * There will be an implementation of this as PlayerImpl.java
  * */
 public interface Player extends Serializable{
-	public void setLocation(int x, int y);
+	public void setLocation(Location location);
 	public Location getLocation();
 	public void setTreasureCount(int treasureCount);
 	public int getTreasureCount();

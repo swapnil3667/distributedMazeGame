@@ -134,7 +134,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 
 			//Setting player parameters
 			Player player = new PlayerImpl(id);
-			player.setLocation(location.getX(), location.getY());
+			player.setLocation(location);
 			player.setTreasureCount(0);
 			board.addPlayer(player);
 			logObject.info("Join request processed successfully. Player added to players list.");

@@ -57,6 +57,17 @@ public class BoardImpl implements Board, Serializable{
 		playersList.add(player);
 	}
 
+	
+	/**
+	 * Method to add treasures to treasures list
+	 * @param treasure : treasure to be added to treasureList 
+	 * */
+	public void addTreasure(Treasure treasure){
+		if(treasureList == null) treasureList = new ArrayList();
+		treasureList.add(treasure);
+	}
+	
+	
 	/**
 	 * Method to check if randomly generated x,y for treasure
 	 * overlaps with a player's location. If yes, look for some
@@ -79,7 +90,7 @@ public class BoardImpl implements Board, Serializable{
 	 */
 	public void generateTreasures(){
 		logObject.info("Initialize treasures list");
-		treasureList = new ArrayList<>();
+		treasureList = new ArrayList<Treasure>();
 		Random randomGenerator = new Random();
 		for(int i = 0;i<noOfTreasures;i++){
 			int x = randomGenerator.nextInt(size);
@@ -88,7 +99,8 @@ public class BoardImpl implements Board, Serializable{
 			TreasureImpl treasure = new TreasureImpl();
 			treasure.setLocation(x, y);
 			treasure.setValue(1);
-			treasureList.add(treasure);
+//			treasureList.add(treasure);
+			addTreasure(treasure);
 		}
 		logObject.info("Treasures generated");
 	}
@@ -141,12 +153,13 @@ public class BoardImpl implements Board, Serializable{
 				(rowList.get(x)).set(y,'S');
 			}else (rowList.get(x)).set(y,'P');
 		}
-		
-		for(Treasure eachTreasure: treasureList){
-			Location location = eachTreasure.getLocation();
-			int x  = location.getX();
-			int y  = location.getY();
-			(rowList.get(x)).set(y,'T');
+		if(treasureList != null){
+			for(Treasure eachTreasure: treasureList){
+				Location location = eachTreasure.getLocation();
+				int x  = location.getX();
+				int y  = location.getY();
+				(rowList.get(x)).set(y,'T');
+			}
 		}
 		
 		for (int i = 0; i < rowList.size(); i++) {

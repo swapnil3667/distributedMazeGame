@@ -22,7 +22,7 @@ public class Server{
 			// Send the alert to the given user.
 			// If this fails, remove them from the list
 			try {
-				eachClient.alert(executeGameObj.board);
+				eachClient.alert(this.executeGameObj.board);
 			} catch (RemoteException re) {
                 System.out.println(
 					"Exception alerting client, removing it.");
@@ -55,8 +55,7 @@ public class Server{
 			System.err.println("Server ready");
 
 			serverObj.executeGameObj.waitTwentySeconds();
-			serverObj.executeGameObj.board.generateTreasures();
-			serverObj.executeGameObj.board.printCurrentBoardState();
+			logObject.info("Waiting period over, board set!! Size = "+serverObj.executeGameObj.board.getSize());
 			
 			serverObj.callBackAllClients();
 		} catch (Exception e) {

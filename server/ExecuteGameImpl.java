@@ -111,8 +111,8 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		logObject.info("Joining time over at server side");
 
 		//Generating treasures at the end of 20 seconds
-//		board.generateTreasures();
-//		board.printCurrentBoardState();
+		board.generateTreasures();
+		board.printCurrentBoardState();
 	}
 
 	/**

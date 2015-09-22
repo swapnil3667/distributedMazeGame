@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 public class Server{
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	ExecuteGameImpl executeGameObj = null;
+	int sizeOfBoard = 0;
+	int noOfTreasures = 0;
 	
 	/**
 	 * Call back to all clients with beginning board
@@ -33,31 +35,39 @@ public class Server{
 		}
 	}
 	
-	public static void main(String[] args) {
-		Server serverObj = new Server();
+	/**
+	 * Method that takes size of board and 
+	 * number of treasures as input from user*/
+	public void takeInputAtServer(){
 		Scanner s = new Scanner(System.in);
 		System.out.print("Enter size of board : ");
-		int sizeOfBoard = s.nextInt();
+		sizeOfBoard = s.nextInt();
 		System.out.print("Enter number of treasures to be generated: ");
-		int noOfTreasures = s.nextInt();
+		noOfTreasures = s.nextInt();
 		logObject.info("Executing game!!");
-
-		//System.setProperty("java.rmi.server.codebase", "file:///home/swapnil/Documents/Distributed_System/distributedMazeGame/server/");
+	}
+	
+	
+	/**
+	 * Method to bind a stub to a name in 
+	 * rmi registry on local system
+	 * */
+	public void bindNameToStubAtRegistry(){
 		ExecuteGame stub = null;
 		Registry registry = null;
-		serverObj.executeGameObj = (ExecuteGameImpl) ExecuteGameImpl.getInstance();
-		serverObj.executeGameObj.init(sizeOfBoard, noOfTreasures);
+		executeGameObj = (ExecuteGameImpl) ExecuteGameImpl.getInstance();
+		executeGameObj.init(sizeOfBoard, noOfTreasures);
 
 		try {
-			stub = (ExecuteGame) UnicastRemoteObject.exportObject(serverObj.executeGameObj, 0);
+			stub = (ExecuteGame) UnicastRemoteObject.exportObject(executeGameObj, 0);
 			registry = LocateRegistry.getRegistry();
 			registry.bind("Game", stub);
 			System.err.println("Server ready");
 
-			serverObj.executeGameObj.waitTwentySeconds();
-			logObject.info("Waiting period over, board set!! Size = "+serverObj.executeGameObj.board.getSize());
+			executeGameObj.waitTwentySeconds();
+			logObject.info("Waiting period over, board set!! Size = "+executeGameObj.board.getSize());
 			
-			serverObj.callBackAllClients();
+			callBackAllClients();
 		} catch (Exception e) {
 				e.printStackTrace();
 			
@@ -65,13 +75,20 @@ public class Server{
 				registry.unbind("Game");
 				registry.bind("Game",stub);
 				System.err.println("Server ready");
- 				serverObj.executeGameObj.waitTwentySeconds();
- 				serverObj.callBackAllClients();
+ 				executeGameObj.waitTwentySeconds();
+ 				callBackAllClients();
 
 				}catch(Exception ee){
 				System.err.println("Server exception: " + ee.toString());
 				ee.printStackTrace();
 			}
 		}
+
+	}
+	
+	public static void main(String[] args) {
+		Server serverObj = new Server();
+		serverObj.takeInputAtServer();
+		serverObj.bindNameToStubAtRegistry();
 	}
 }

@@ -101,6 +101,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
 				//Calling move player to test
 				clientObj.board = stub.movePlayer(clientObj.selfId, directionToMove);
+				//Printing current score sheet
+				clientObj.board.printScoresDuringGame(clientObj.selfId);
+				
 //				System.out.println("After move");
 				Runtime.getRuntime().exec("clear");
 				clientObj.board.printBoard(clientObj.selfId);

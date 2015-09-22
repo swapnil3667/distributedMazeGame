@@ -210,6 +210,21 @@ public class BoardImpl implements Board, Serializable{
 	}
 	
 	/**
+	 * method to print final result
+	 * at client side, after game is over
+	 * */
+	public void printScoresDuringGame(int callingPlayerId){
+		logObject.info("Printing game results!");
+		System.out.println("Your score is : "+getPlayerWithId(callingPlayerId).getTreasureCount());
+		for(Player eachPlayer : playersList){
+			if(eachPlayer.getId() != callingPlayerId){
+				System.out.println("Player with id "+eachPlayer.getId()+" has scored "+eachPlayer.getTreasureCount());
+			}
+		}
+	}
+	
+	
+	/**
 	 * method to print final result at server
 	 * side
 	 * */
@@ -241,6 +256,20 @@ public class BoardImpl implements Board, Serializable{
 		treasureList.remove(toRemove);
 	}
 	
+	/**
+	 * Method to check if player is moving a cell
+	 * where there is already a player
+	 * */
+	public boolean isCellOccupied(Location newLocation){
+		boolean isOccupied = false;
+		for(Player eachPlayer : playersList){
+			if(eachPlayer.getLocation().getX() == newLocation.getX() && eachPlayer.getLocation().getY() == newLocation.getY()){
+				return true;
+			}
+		}
+		
+		return isOccupied;
+	}
 	
 	/**
 	 * updates location for curr player based on moving direction
@@ -253,22 +282,22 @@ public class BoardImpl implements Board, Serializable{
 		if(moveDir.equals("up") && currPlayer.getLocation().getX() > 0){
 			newLocation = new Location(currPlayer.getLocation().getX() - 1, currPlayer.getLocation().getY());
 			checkPlayerOverlapwTreasure(newLocation, currPlayer);
-			currPlayer.setLocation(newLocation);
+			if(!isCellOccupied(newLocation)) currPlayer.setLocation(newLocation);
 		}
 		if(moveDir.equals("down") && currPlayer.getLocation().getX() < size-1){
 			newLocation = new Location(currPlayer.getLocation().getX() + 1, currPlayer.getLocation().getY());
 			checkPlayerOverlapwTreasure(newLocation, currPlayer);
-			currPlayer.setLocation(newLocation);
+			if(!isCellOccupied(newLocation)) currPlayer.setLocation(newLocation);
 		}
 		if(moveDir.equals("left") && currPlayer.getLocation().getY() > 0){
 			newLocation = new Location(currPlayer.getLocation().getX() , currPlayer.getLocation().getY()-1);
 			checkPlayerOverlapwTreasure(newLocation, currPlayer);
-			currPlayer.setLocation(newLocation);
+			if(!isCellOccupied(newLocation)) currPlayer.setLocation(newLocation);
 		}
 		if(moveDir.equals("right") && currPlayer.getLocation().getY() < size-1){
 			newLocation = new Location(currPlayer.getLocation().getX(), currPlayer.getLocation().getY()+1);
 			checkPlayerOverlapwTreasure(newLocation, currPlayer);
-			currPlayer.setLocation(newLocation);
+			if(!isCellOccupied(newLocation)) currPlayer.setLocation(newLocation);
 		}
 	}
 

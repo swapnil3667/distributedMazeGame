@@ -3,7 +3,7 @@ import java.rmi.registry.Registry;
 import java.util.logging.Logger;
 import java.util.Scanner;
 
-public class PlayerImpl implements Player {
+public class PeerImpl implements Peer {
 	
 	String primaryIp = null;
 	boolean isPlayerPrimary = false;
@@ -44,30 +44,26 @@ public class PlayerImpl implements Player {
 	 * */
 	public void startServerAsPrimary(){
 		serverObj = new Server();
-		Scanner s = new Scanner(System.in);
-		System.out.print("Enter size of board : ");
-		sizeOfBoard = s.nextInt();
-		System.out.print("Enter number of treasures to be generated: ");
-		noOfTreasures = s.nextInt();
-		logObject.info("Primary Server is up!!");
+		serverObj.takeInputAtServer();
+		serverObj.bindNameToStubAtRegistry();
 	}
 	
 	/**
-	 * method to register stub as primary
+	 * Method that makes a player as back up server
+	 * chosen at random. This method will be called 
+	 * right before call back to all players/clients
 	 * */
-	public void registerStubAsPrimary(){
-		ExecuteGame stub = null;
-		Registry registry = null;
-		serverObj.executeGameObj = (ExecuteGameImpl) ExecuteGameImpl.getInstance();
-		serverObj.executeGameObj.init(sizeOfBoard, noOfTreasures);
+	public void selectPlayerForBackup(){
+		Board board = serverObj.getExecuteGameObj().getBoard();
+//		int numberOfPlayer = 
 	}
 	
 	
 	public static void main(String[] args) {
-		PlayerImpl playerObj = new PlayerImpl();
-		boolean isThisPrimaryOfBackup = playerObj.isPrimaryOrBackup(args);
-		
-		
+		PeerImpl peerObj = new PeerImpl();
+		boolean isThisPrimaryOrBackup = peerObj.isPrimaryOrBackup(args);
+		if(isThisPrimaryOrBackup) peerObj.startServerAsPrimary();
+		else System.out.println("Call client methods");
 		
 	}
 }

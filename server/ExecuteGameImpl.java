@@ -16,7 +16,7 @@ import java.util.List;
  * connected players with initial maze.
  * */
 public class ExecuteGameImpl implements ExecuteGame, Serializable {
-	Board board = null;
+	private Board board = null;
 	int sizeOfBoard=0;
 	int noOfTreasures = 0;
 	int noOfPlayers= 0;

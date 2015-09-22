@@ -7,9 +7,13 @@ import java.util.logging.Logger;
 
 public class Server{
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
-	ExecuteGameImpl executeGameObj = null;
+	private ExecuteGameImpl executeGameObj = null;
 	int sizeOfBoard = 0;
 	int noOfTreasures = 0;
+	
+	public ExecuteGameImpl getExecuteGameObj(){
+		return executeGameObj;
+	}
 	
 	/**
 	 * Call back to all clients with beginning board
@@ -24,7 +28,7 @@ public class Server{
 			// Send the alert to the given user.
 			// If this fails, remove them from the list
 			try {
-				eachClient.alert(this.executeGameObj.board);
+				eachClient.alert(this.executeGameObj.getBoard());
 			} catch (RemoteException re) {
                 System.out.println(
 					"Exception alerting client, removing it.");
@@ -47,6 +51,13 @@ public class Server{
 		logObject.info("Executing game!!");
 	}
 	
+	/**
+	 * Method to start waiting time of 20 seconds
+	 * at server side
+	 * */
+	public void waitTwentySecAtServer(){
+		executeGameObj.waitTwentySeconds();
+	}
 	
 	/**
 	 * Method to bind a stub to a name in 
@@ -61,22 +72,22 @@ public class Server{
 		try {
 			stub = (ExecuteGame) UnicastRemoteObject.exportObject(executeGameObj, 0);
 			registry = LocateRegistry.getRegistry();
-			registry.bind("Game", stub);
+			registry.bind("Primary", stub);
 			System.err.println("Server ready");
 
-			executeGameObj.waitTwentySeconds();
+			/*executeGameObj.waitTwentySeconds();
 			logObject.info("Waiting period over, board set!! Size = "+executeGameObj.board.getSize());
 			
-			callBackAllClients();
+			callBackAllClients();*/
 		} catch (Exception e) {
 				e.printStackTrace();
 			
 			try{
-				registry.unbind("Game");
-				registry.bind("Game",stub);
+				registry.unbind("Primary");
+				registry.bind("Primary",stub);
 				System.err.println("Server ready");
- 				executeGameObj.waitTwentySeconds();
- 				callBackAllClients();
+ 				/*executeGameObj.waitTwentySeconds();
+ 				callBackAllClients();*/
 
 				}catch(Exception ee){
 				System.err.println("Server exception: " + ee.toString());
@@ -86,9 +97,12 @@ public class Server{
 
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RemoteException {
 		Server serverObj = new Server();
 		serverObj.takeInputAtServer();
 		serverObj.bindNameToStubAtRegistry();
+		serverObj.waitTwentySecAtServer();
+		logObject.info("Waiting period over, board set!! Size = "+serverObj.executeGameObj.getBoard().getSize());
+		serverObj.callBackAllClients();
 	}
 }

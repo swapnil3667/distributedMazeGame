@@ -14,6 +14,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     boolean didServerCallBack = false;
     private static Logger logObject = Logger.getLogger(Client.class.getName());
     Board board = null;
+    ExecuteGame executeGameStub = null;
     
     public Client() throws RemoteException{}
 
@@ -69,57 +70,70 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     	}
     }
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    /**
+     * Method that enables player to move
+     * @throws IOException 
+     * @throws InterruptedException */
+    public void enablePlayerMove() throws InterruptedException, IOException{
+		while(true){
+			changeConsoleModeStty();
+			Console console = System.console();
+			Reader reader = console.reader();
+			int consoleInput = reader.read();
+			resetConsoleMode();
+
+				if(consoleInput == 120) break; //breaks on 'X' press
+
+			String directionToMove = getDirectionOnKeyPress(consoleInput);
+
+			//Calling move player to test
+			board = executeGameStub.movePlayer(getSelfId(), directionToMove);
+			//Printing current score sheet
+			board.printScoresDuringGame(getSelfId());
+			
+//			System.out.println("After move");
+			Runtime.getRuntime().exec("clear");
+			board.printBoard(selfId);
+			if(board.getIsGameOverFlag()){
+				logObject.info("game over");
+				System.out.println("All treasures taken, game is over");
+				board.printFinalResultForPlayers(getSelfId());
+				break;
+			}
+		}
+		return;
+    }
+    
+    /**
+     * Method to start player by getting execute
+     * game remote stub and joining game*/
+    public void startClient(String[] args){
+    	String host = (args.length < 1) ? null : args[0];
+    	if (System.getSecurityManager() == null) {
+    		System.setSecurityManager(new SecurityManager());
+    	}
+    	try {
+    		Registry registry = LocateRegistry.getRegistry(host);
+    		executeGameStub = (ExecuteGame) registry.lookup("Primary");
+    		if(executeGameStub.joinGame(this)){
+    			logObject.info("Request processed at server side, id assigned : "+selfId);
+    		}
+    		
+    		waitForServerCallBack();
+    		board.printBoard(selfId);
+    		enablePlayerMove();
+    		
+    		} catch (Exception e) {
+    		    System.err.println("Client exception: " + e.toString());
+    		    e.printStackTrace();
+    		}
+
+    }
+    
+public static void main(String[] args) throws InterruptedException, IOException {
 
     Client clientObj = new Client();
+    clientObj.startClient(args);
 
-
-	String host = (args.length < 1) ? null : args[0];
-	if (System.getSecurityManager() == null) {
-		System.setSecurityManager(new SecurityManager());
-	}
-	try {
-		Registry registry = LocateRegistry.getRegistry(host);
-		ExecuteGame stub = (ExecuteGame) registry.lookup("Game");
-		if(stub.joinGame(clientObj)){
-			logObject.info("Request processed at server side, id assigned : "+clientObj.selfId);
-		}
-		clientObj.waitForServerCallBack();
-		clientObj.board.printBoard(clientObj.selfId);
-		
-		while(true){
-
-				clientObj.changeConsoleModeStty();
-				Console console = System.console();
-				Reader reader = console.reader();
-				int consoleInput = reader.read();
-				clientObj.resetConsoleMode();
-
-					if(consoleInput == 120) break; //breaks on 'X' press
-
-				String directionToMove = clientObj.getDirectionOnKeyPress(consoleInput);
-
-				//Calling move player to test
-				clientObj.board = stub.movePlayer(clientObj.selfId, directionToMove);
-				//Printing current score sheet
-				clientObj.board.printScoresDuringGame(clientObj.selfId);
-				
-//				System.out.println("After move");
-				Runtime.getRuntime().exec("clear");
-				clientObj.board.printBoard(clientObj.selfId);
-				if(clientObj.board.getIsGameOverFlag()){
-					logObject.info("game over");
-					System.out.println("All treasures taken, game is over");
-					clientObj.board.printFinalResultForPlayers(clientObj.getSelfId());
-					break;
-				}
-
-			}
-		} catch (Exception e) {
-		    System.err.println("Client exception: " + e.toString());
-		    e.printStackTrace();
-		}
     }
-
-	
 }

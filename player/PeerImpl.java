@@ -1,4 +1,5 @@
 
+import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.util.logging.Logger;
 import java.util.Scanner;
@@ -8,8 +9,9 @@ public class PeerImpl implements Peer {
 	String primaryIp = null;
 	boolean isPlayerPrimary = false;
 	boolean isPlayerBackup = false;
-	private static Logger logObject = Logger.getLogger(PlayerImpl.class.getName());
-	Server serverObj = null;
+	private static Logger logObject = Logger.getLogger(PeerImpl.class.getName());
+	ServerInterface serverObj = null;
+	ClientInterface clientObj = null;
 	int sizeOfBoard = 0;
 	int noOfTreasures = 0;
 	
@@ -40,12 +42,21 @@ public class PeerImpl implements Peer {
 	}
 	
 	/**
-	 * method to start primary server on this player
+	 * method to start primary server on this peer
 	 * */
 	public void startServerAsPrimary(){
 		serverObj = new Server();
 		serverObj.takeInputAtServer();
 		serverObj.bindNameToStubAtRegistry();
+	}
+	
+	/**
+	 * Method to start a client on this peer
+	 * @throws RemoteException 
+	 * */
+	public void startClientOnThisPeer(String[] args) throws RemoteException{
+		clientObj = new Client();
+		clientObj.startClient(args);
 	}
 	
 	/**
@@ -59,11 +70,10 @@ public class PeerImpl implements Peer {
 	}
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RemoteException {
 		PeerImpl peerObj = new PeerImpl();
 		boolean isThisPrimaryOrBackup = peerObj.isPrimaryOrBackup(args);
 		if(isThisPrimaryOrBackup) peerObj.startServerAsPrimary();
-		else System.out.println("Call client methods");
-		
+		else peerObj.startClientOnThisPeer(args);
 	}
 }

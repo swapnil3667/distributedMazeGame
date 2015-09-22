@@ -5,7 +5,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-public class Server{
+public class Server implements ServerInterface{
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	private ExecuteGameImpl executeGameObj = null;
 	int sizeOfBoard = 0;

@@ -25,6 +25,13 @@ public class BoardImpl implements Board, Serializable{
 
 
 	/**
+	 * Returns list of players
+	 * */
+	public List<Player> getPlayerList(){
+		return playersList;
+	}
+	
+	/**
 	 * Getter for size of board
 	 * */
 	public int getSize(){

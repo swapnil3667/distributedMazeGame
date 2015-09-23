@@ -1,11 +1,21 @@
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
-public class PeerImpl implements Peer {
+public class PeerImpl  implements Peer, Serializable {
 	
+	protected PeerImpl() throws RemoteException {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
 	String primaryIp = null;
 	boolean isPlayerPrimary = false;
 	boolean isPlayerBackup = false;
@@ -28,7 +38,7 @@ public class PeerImpl implements Peer {
 			primaryIp = args[1];
 			return true;
 		}else{
-			primaryIp = args[1];
+			primaryIp = args[0];
 		}
 		return false;
 	}
@@ -43,11 +53,15 @@ public class PeerImpl implements Peer {
 	
 	/**
 	 * method to start primary server on this peer
+	 * @throws RemoteException 
 	 * */
-	public void startServerAsPrimary(){
+	public void startServerAsPrimary() throws RemoteException{
 		serverObj = new Server();
 		serverObj.takeInputAtServer();
 		serverObj.bindNameToStubAtRegistry();
+		serverObj.waitTwentySecAtServer();
+		logObject.info("Waiting period over, board set!! Size = "+serverObj.getExecuteGameObj().getBoard().getSize());
+		serverObj.callBackAllClients();
 	}
 	
 	/**
@@ -63,10 +77,21 @@ public class PeerImpl implements Peer {
 	 * Method that makes a player as back up server
 	 * chosen at random. This method will be called 
 	 * right before call back to all players/clients
+	 * @throws RemoteException 
 	 * */
-	public void selectPlayerForBackup(){
+	public void selectPlayerForBackup() throws RemoteException{
+		logObject.info("Selecting back up from all players");
 		Board board = serverObj.getExecuteGameObj().getBoard();
-//		int numberOfPlayer = 
+		List<Player> playerList = board.getPlayerList(); 
+		int numberOfPlayer = playerList.size();
+		Random randomGenerator = new Random();
+		int randPlayer = randomGenerator.nextInt(numberOfPlayer);
+		while( playerList.get(randPlayer).getId() == clientObj.getSelfId()){
+			randPlayer = randomGenerator.nextInt(numberOfPlayer);
+		}
+		
+		Player backupPlayer = playerList.get(randPlayer);
+		logObject.info("Player with id "+playerList.get(randPlayer).getId()+" selected as backup server");
 	}
 	
 	

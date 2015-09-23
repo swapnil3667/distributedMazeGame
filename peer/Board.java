@@ -28,4 +28,5 @@ public interface Board extends Serializable{
 	public void printFinalResultForServer();
 	public void printScoresDuringGame(int callingPlayerId);
 	public boolean isCellOccupied(Location newLocation);
+	public List<Player> getPlayerList();
 }

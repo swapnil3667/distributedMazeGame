@@ -15,6 +15,7 @@ public class Server implements ServerInterface{
 		return executeGameObj;
 	}
 	
+	
 	/**
 	 * Call back to all clients with beginning board
 	 * state

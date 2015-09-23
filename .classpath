@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="client"/>
 	<classpathentry kind="src" path="server"/>
 	<classpathentry kind="src" path="player"/>
+	<classpathentry kind="src" path="peer"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

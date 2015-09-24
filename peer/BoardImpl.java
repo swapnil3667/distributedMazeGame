@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +100,24 @@ public class BoardImpl implements Board, Serializable{
 	}
 	
 	/**
+     * Method to change console mode from
+     * buffered to real time
+     * */
+    public void changeConsoleModeStty() throws InterruptedException, IOException{
+    	String[] cmd = {"/bin/sh", "-c", "stty raw </dev/tty"};
+		Runtime.getRuntime().exec(cmd).waitFor();
+    }
+
+    /**
+     * Resetting console mode to buffered
+     * */
+    public void resetConsoleMode() throws InterruptedException, IOException{
+    	String[] cmd = new String[] {"/bin/sh", "-c", "stty sane </dev/tty"};
+		Runtime.getRuntime().exec(cmd).waitFor();
+    }
+    
+    
+	/**
 	 * Method to check if randomly generated x,y for treasure
 	 * overlaps with a player's location. If yes, look for some
 	 * other x,y
@@ -160,8 +179,8 @@ public class BoardImpl implements Board, Serializable{
 		}
 	}
 
-	public void printBoard(int selfId){
-		
+	public void printBoard(int selfId) throws InterruptedException, IOException{
+		resetConsoleMode();
 		List<List<Character>> rowList = new ArrayList<List<Character>>();
 		String si = new String();
 		Player callingPlayer = getPlayerWithId(selfId);
@@ -199,13 +218,17 @@ public class BoardImpl implements Board, Serializable{
 			}
 			System.out.println();
 		}
+		changeConsoleModeStty();
 	}
 
 	/**
 	 * method to print final result
 	 * at client side, after game is over
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 * */
-	public void printFinalResultForPlayers(int callingPlayerId){
+	public void printFinalResultForPlayers(int callingPlayerId) throws InterruptedException, IOException{
+		resetConsoleMode();
 		logObject.info("Printing game results!");
 		System.out.println("\n==================================*RESULT*==================================");
 		System.out.println("Your score is : "+getPlayerWithId(callingPlayerId).getTreasureCount());
@@ -214,13 +237,17 @@ public class BoardImpl implements Board, Serializable{
 				System.out.println("Player with id "+eachPlayer.getId()+" scored "+eachPlayer.getTreasureCount());
 			}
 		}
+		changeConsoleModeStty();
 	}
 	
 	/**
 	 * method to print final result
 	 * at client side, after game is over
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 * */
-	public void printScoresDuringGame(int callingPlayerId){
+	public void printScoresDuringGame(int callingPlayerId) throws InterruptedException, IOException{
+		resetConsoleMode();
 		logObject.info("Printing game results!");
 		System.out.println("Your score is : "+getPlayerWithId(callingPlayerId).getTreasureCount());
 		for(Player eachPlayer : playersList){
@@ -228,19 +255,24 @@ public class BoardImpl implements Board, Serializable{
 				System.out.println("Player with id "+eachPlayer.getId()+" has scored "+eachPlayer.getTreasureCount());
 			}
 		}
+		changeConsoleModeStty();
 	}
 	
 	
 	/**
 	 * method to print final result at server
 	 * side
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 * */
-	public void printFinalResultForServer(){
+	public void printFinalResultForServer() throws InterruptedException, IOException{
+		resetConsoleMode();
 		logObject.info("Printing game results!");
 		System.out.println("\n==================================*RESULT*==================================");
 		for(Player eachPlayer : playersList){
 				System.out.println("Player with id "+eachPlayer.getId()+" scored "+eachPlayer.getTreasureCount());
 		}
+		changeConsoleModeStty();
 	}
 	
 	/**
@@ -249,12 +281,16 @@ public class BoardImpl implements Board, Serializable{
 	 * and increase treasureCount for that player
 	 * @param location : new location of a player
 	 * @param player : player for which location is being updated 
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 * */
-	public void checkPlayerOverlapwTreasure(Location location, Player player){
+	public void checkPlayerOverlapwTreasure(Location location, Player player) throws InterruptedException, IOException{
 		Treasure toRemove = new TreasureImpl();
 		for(Treasure eachTreasure : treasureList){
 			if(eachTreasure.getLocation().getX() == location.getX() && eachTreasure.getLocation().getY() == location.getY()){
+				resetConsoleMode();
 				logObject.info("Player "+player.getId()+" got treasure ("+location.getX()+", "+location.getY()+")");
+				changeConsoleModeStty();
 				player.setTreasureCount(player.getTreasureCount() + eachTreasure.getValue());
 				toRemove = eachTreasure;
 			}
@@ -283,8 +319,10 @@ public class BoardImpl implements Board, Serializable{
 	 * @param currPlayer : current location of player
 	 * @param moveDir : Direction in which move is requested
 	 * @return
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 * */
-	public void setNewLocation(Player currPlayer, String moveDir){
+	public void setNewLocation(Player currPlayer, String moveDir) throws InterruptedException, IOException{
 		Location newLocation = null;
 		if(moveDir.equals("up") && currPlayer.getLocation().getX() > 0){
 			newLocation = new Location(currPlayer.getLocation().getX() - 1, currPlayer.getLocation().getY());
@@ -306,6 +344,9 @@ public class BoardImpl implements Board, Serializable{
 			checkPlayerOverlapwTreasure(newLocation, currPlayer);
 			if(!isCellOccupied(newLocation)) currPlayer.setLocation(newLocation);
 		}
+		if(moveDir.equals("invalid")){
+			System.out.println("Invalid key pressed. Please press a/s/d/w\n");
+		}
 	}
 
 
@@ -313,8 +354,10 @@ public class BoardImpl implements Board, Serializable{
 	 * Update location of player with id
 	 * @param playerId : id of player to be moved
 	 * @param moveDirection : direction in which player is to be moved
+	 * @throws IOException 
+	 * @throws InterruptedException 
 	 * */
-	public void updatedPlayerLocation(int playerId, String moveDirection){
+	public void updatedPlayerLocation(int playerId, String moveDirection) throws InterruptedException, IOException{
 			Player currPlayer = getPlayerWithId(playerId);
 			setNewLocation(currPlayer, moveDirection);
 	}

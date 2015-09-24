@@ -11,10 +11,11 @@ import java.rmi.RemoteException;
 
 public class Client extends UnicastRemoteObject implements ClientInterface {
     int selfId = 0;
-    boolean didServerCallBack = false;
     private static Logger logObject = Logger.getLogger(Client.class.getName());
     Board board = null;
     ExecuteGame executeGameStub = null;
+    private static final class Lock { }
+    private final Object lock = new Lock();
     
     public Client() throws RemoteException{}
 
@@ -25,6 +26,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     public void setSelfId(int id) throws RemoteException {
 		this.selfId = id;
 	}
+    
+    public void setExecuteGameObj(ExecuteGame executeGameStub){
+    	this.executeGameStub = executeGameStub;
+    }
     
     /**
      * Method to change console mode from
@@ -43,11 +48,14 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 		Runtime.getRuntime().exec(cmd).waitFor();
     }
 
-    public void alert(Board board){
+    public void callBackFromServer(Board board){
       System.out.println("Call Back : This is your starting board\n");
 //      board.printBoard(selfId);
       this.board = board;
-      didServerCallBack = true;
+      synchronized (lock) {
+    	    lock.notifyAll();
+      }
+      
     }
 
     /**
@@ -61,14 +69,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     	else if(consoleInput == 97) return "left";
     	else if(consoleInput == 115) return "down";
     	else if(consoleInput == 100) return "right";
-    	return null;
+    	else return "invalid";
     }
     
-    public void waitForServerCallBack(){
-    	while(!didServerCallBack){
-    		System.out.println(didServerCallBack);
-    	}
-    }
 
     /**
      * Method that enables player to move
@@ -90,7 +93,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 			board = executeGameStub.movePlayer(getSelfId(), directionToMove);
 			//Printing current score sheet
 			board.printScoresDuringGame(getSelfId());
-			
+			 
 //			System.out.println("After move");
 			Runtime.getRuntime().exec("clear");
 			board.printBoard(selfId);
@@ -119,7 +122,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     			logObject.info("Request processed at server side, id assigned : "+selfId);
     		}
     		
-    		waitForServerCallBack();
+    		synchronized (lock) {
+    		        lock.wait();
+    		}
+    		
     		board.printBoard(selfId);
     		enablePlayerMove();
     		
@@ -127,13 +133,36 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     		    System.err.println("Client exception: " + e.toString());
     		    e.printStackTrace();
     		}
-
+    }
+    
+    /**
+     * Method to start player on the peer that is
+     * also acting as a primary server
+     * */
+    public void startClientAtSelfPeer(){
+    	/*if (System.getSecurityManager() == null) {
+    		System.setSecurityManager(new SecurityManager());
+    	}
+    	try {
+    		if(executeGameStub.joinGame(this)){
+    			logObject.info("Request processed at server side, id assigned : "+selfId);
+    		}
+    		
+    		waitForServerCallBack();
+    		board.printBoard(selfId);
+    		enablePlayerMove();
+    		
+    		} catch (Exception e) {
+    		    System.err.println("Client exception: " + e.toString());
+    		    e.printStackTrace();
+    		}*/
     }
     
 public static void main(String[] args) throws InterruptedException, IOException {
 
     Client clientObj = new Client();
     clientObj.startClient(args);
+    
 
     }
 }

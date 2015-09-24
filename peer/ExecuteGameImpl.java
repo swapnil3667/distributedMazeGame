@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -47,6 +48,24 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		return board;
 	}
 
+	/**
+     * Method to change console mode from
+     * buffered to real time
+     * */
+    public void changeConsoleModeStty() throws InterruptedException, IOException{
+    	String[] cmd = {"/bin/sh", "-c", "stty raw </dev/tty"};
+		Runtime.getRuntime().exec(cmd).waitFor();
+    }
+
+    /**
+     * Resetting console mode to buffered
+     * */
+    public void resetConsoleMode() throws InterruptedException, IOException{
+    	String[] cmd = new String[] {"/bin/sh", "-c", "stty sane </dev/tty"};
+		Runtime.getRuntime().exec(cmd).waitFor();
+    }
+    
+    
 	/**
 	 * Method to initialize attributes,
 	 * in case of singleton, this is not
@@ -108,14 +127,17 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		long end = System.currentTimeMillis() + 20000;
 		while(System.currentTimeMillis() < end){} 	//runs for 20 sec
 		System.out.println("Joining period over");
-		setFlag(true);
+//		setFlag(true);
 		logObject.info("Joining time over at server side");
 
 		//Generating treasures at the end of 20 seconds
-		board.generateTreasures();
-		board.printCurrentBoardState();
+		/*board.generateTreasures();
+		board.printCurrentBoardState();*/
 	}
 
+	
+	
+	
 	/**
 	 * Method that different clients will call to join the game
 	 * @throws RemoteException 
@@ -151,7 +173,8 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		return "This is a test message from server";
 	}
 
-	public Board movePlayer(int id, String moveDirection){
+	public Board movePlayer(int id, String moveDirection) throws InterruptedException, IOException{
+		resetConsoleMode();
 		if(board.getTreasureListCurrentSize() != 0){
 			board.updatedPlayerLocation(id, moveDirection);
 		}else {
@@ -160,6 +183,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 			board.setIsGameOverFlag(true);
 			board.printFinalResultForServer();
 		}
+		changeConsoleModeStty();
 		return board;
 	}
 }

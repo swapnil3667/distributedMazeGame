@@ -29,7 +29,7 @@ public class Server implements ServerInterface{
 			// Send the alert to the given user.
 			// If this fails, remove them from the list
 			try {
-				eachClient.alert(this.executeGameObj.getBoard());
+				eachClient.callBackFromServer(this.executeGameObj.getBoard());
 			} catch (RemoteException re) {
                 System.out.println(
 					"Exception alerting client, removing it.");
@@ -81,7 +81,6 @@ public class Server implements ServerInterface{
 			
 			callBackAllClients();*/
 		} catch (Exception e) {
-				e.printStackTrace();
 			
 			try{
 				registry.unbind("Primary");

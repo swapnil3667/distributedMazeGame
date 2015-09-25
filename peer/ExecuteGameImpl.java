@@ -4,6 +4,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Logger;
+
+import com.sun.org.apache.bcel.internal.generic.ISUB;
+
 import java.util.List;
 /**
  * This is the class where logic of the game will go.
@@ -65,6 +68,20 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		Runtime.getRuntime().exec(cmd).waitFor();
     }
     
+    public ClientInterface getClientObjectWithId(int clientPlayerId) throws RemoteException{
+    	for(ClientInterface eachClient : clientList){
+			if (eachClient.getSelfId() == clientPlayerId) return eachClient;
+		}
+		return null;
+    }
+    
+    /**
+     * Method that back up server calls to see if primary
+     * is up and running
+     * */
+    public boolean isPrimaryAlive() throws RemoteException{
+    	return true;
+    }
     
 	/**
 	 * Method to initialize attributes,
@@ -114,7 +131,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	}
 
 
-	public void setFlag(boolean flag){
+	public void setFlagTwentySecOver(boolean flag){
 		this.isTwentySecOver = flag;
 	}
 
@@ -123,7 +140,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	 * so that all players can join
 	 * */
 	public void waitTwentySeconds(){
-		setFlag(false);
+		setFlagTwentySecOver(false);
 		long end = System.currentTimeMillis() + 20000;
 		while(System.currentTimeMillis() < end){} 	//runs for 20 sec
 		System.out.println("Joining period over");
@@ -186,4 +203,5 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		changeConsoleModeStty();
 		return board;
 	}
+
 }

@@ -15,4 +15,6 @@ public interface ExecuteGame extends Remote {
 	public void setBoard(Board board)  throws RemoteException;
 	public void changeConsoleModeStty() throws InterruptedException, IOException;
 	public void resetConsoleMode() throws InterruptedException, IOException;
+	public ClientInterface getClientObjectWithId(int clientPlayerId) throws RemoteException;
+	public boolean isPrimaryAlive() throws RemoteException;
 }

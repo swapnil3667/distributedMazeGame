@@ -13,9 +13,12 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     int selfId = 0;
     private static Logger logObject = Logger.getLogger(Client.class.getName());
     Board board = null;
+    Board backupBoard = null;
     ExecuteGame executeGameStub = null;
     private static final class Lock { }
     private final Object lock = new Lock();
+    boolean isClientPrimary = false;
+    boolean isClientSecondary = false;
     
     public Client() throws RemoteException{}
 
@@ -29,6 +32,22 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     
     public void setExecuteGameObj(ExecuteGame executeGameStub){
     	this.executeGameStub = executeGameStub;
+    }
+    
+    public void setIsClientPrimary(boolean isClientPrimary){
+    	this.isClientPrimary = isClientPrimary;
+    }
+    
+    public boolean getIsClientPrimary(){
+    	return isClientPrimary;
+    }
+    
+    public void setIsClientBackup(boolean isClientSecondary){
+    	this.isClientSecondary = isClientSecondary;
+    }
+    
+    public boolean getIsClientBackup(){
+    	return isClientSecondary;
     }
     
     /**
@@ -58,6 +77,21 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
       
     }
 
+    /**
+     * Method that primary server calls to see if back up
+     * is up and running
+     * @throws IOException 
+     * @throws InterruptedException 
+     * */
+    public boolean isBackupAlive(Board board){
+//    	resetConsoleMode();
+    	backupBoard = board;
+//    	logObject.info("Back Copy : Treasure Count is "+backupBoard.getTreasureListCurrentSize());
+//    	changeConsoleModeStty();
+    	return true;
+    }
+    
+    
     /**
      * Returns direction as string based on key
      * pressed on key board

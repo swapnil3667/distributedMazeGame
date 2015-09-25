@@ -237,7 +237,7 @@ public class BoardImpl implements Board, Serializable{
 				System.out.println("Player with id "+eachPlayer.getId()+" scored "+eachPlayer.getTreasureCount());
 			}
 		}
-		changeConsoleModeStty();
+//		changeConsoleModeStty();
 	}
 	
 	/**
@@ -272,7 +272,7 @@ public class BoardImpl implements Board, Serializable{
 		for(Player eachPlayer : playersList){
 				System.out.println("Player with id "+eachPlayer.getId()+" scored "+eachPlayer.getTreasureCount());
 		}
-		changeConsoleModeStty();
+//		changeConsoleModeStty();
 	}
 	
 	/**

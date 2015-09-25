@@ -1,17 +1,13 @@
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.ConnectException;
 import java.rmi.RemoteException;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Logger;
-
-
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 
-public class PeerImpl  implements Peer, Serializable {
+public class PeerImpl  implements Peer, Serializable, Runnable {
 	 private static final class Lock { }
 	 private final Object lock = new Lock();
 	    
@@ -27,6 +23,7 @@ public class PeerImpl  implements Peer, Serializable {
 	private static Logger logObject = Logger.getLogger(PeerImpl.class.getName());
 	ServerInterface serverObj = null;
 	ClientInterface clientObj = null;
+	ClientInterface backupClientPlayer = null;
 	int sizeOfBoard = 0;
 	int noOfTreasures = 0;
 	
@@ -68,18 +65,28 @@ public class PeerImpl  implements Peer, Serializable {
 		serverObj.waitTwentySecAtServer();
 		
 		logObject.info("Waiting period over, board set!! Size = "+serverObj.getExecuteGameObj().getBoard().getSize());
+		
+		//Initializing a player on this peer.
 		clientObj = new Client();
 		serverObj.getExecuteGameObj().joinGame(clientObj);
 		/*synchronized (lock) {
 	        lock.wait();
 		}*/
-		serverObj.getExecuteGameObj().setFlag(true);
+		serverObj.getExecuteGameObj().setFlagTwentySecOver(true);
+		//Primary Generates treasure and prints board in text form 
 		serverObj.getExecuteGameObj().getBoard().generateTreasures();
-		serverObj.getExecuteGameObj().getBoard().printCurrentBoardState();	
+		serverObj.getExecuteGameObj().getBoard().printCurrentBoardState();
+		
 		selectPlayerForBackup();
 		serverObj.callBackAllClients();
 		serverObj.getExecuteGameObj().getBoard().printBoard(clientObj.getSelfId());
+		//This thread does polling with back up server
+		new Thread(this).start();
 		
+		
+		/*Setting execute game stub (which is a remote stub for remote player) for client/player
+		at this peer*/
+		clientObj.setIsClientPrimary(true);
 		clientObj.setExecuteGameObj(serverObj.getExecuteGameObj());
 		clientObj.enablePlayerMove();
 	}
@@ -91,6 +98,7 @@ public class PeerImpl  implements Peer, Serializable {
 	public void startClientOnThisPeer(String[] args) throws RemoteException{
 		clientObj = new Client();
 		clientObj.startClient(args);
+		
 	}
 	
 	/**
@@ -106,12 +114,13 @@ public class PeerImpl  implements Peer, Serializable {
 		int numberOfPlayer = playerList.size();
 		Random randomGenerator = new Random();
 		int randPlayerIdx = randomGenerator.nextInt(numberOfPlayer);
-		while( playerList.get(randPlayerIdx).getId() == clientObj.getSelfId()){
+		while( serverObj.getExecuteGameObj().clientList.get(randPlayerIdx).getSelfId()== clientObj.getSelfId()){
 			randPlayerIdx = randomGenerator.nextInt(numberOfPlayer);
 		}
 		
-		Player backupPlayer = playerList.get(randPlayerIdx);
-		logObject.info("Player with id "+playerList.get(randPlayerIdx).getId()+" selected as backup server");
+//		Player backupPlayer = playerList.get(randPlayerIdx);
+		backupClientPlayer = serverObj.getExecuteGameObj().clientList.get(randPlayerIdx);
+		logObject.info("Player with id "+backupClientPlayer.getSelfId()+" selected as backup server");
 	}
 	
 	
@@ -120,5 +129,21 @@ public class PeerImpl  implements Peer, Serializable {
 		boolean isThisPrimaryOrBackup = peerObj.isPrimaryOrBackup(args);
 		if(isThisPrimaryOrBackup) peerObj.startServerAsPrimary();
 		else peerObj.startClientOnThisPeer(args);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		try{
+				while(backupClientPlayer.isBackupAlive(serverObj.getExecuteGameObj().getBoard())){}
+		}catch(RemoteException e){
+			try {
+				serverObj.getExecuteGameObj().resetConsoleMode();
+			} catch (InterruptedException e1) {} catch (IOException e1) {}
+			logObject.info("Back up server is down, picking another backup");
+			try {
+				serverObj.getExecuteGameObj().changeConsoleModeStty();
+			} catch (InterruptedException e1) {} catch (IOException e1) {}
+		} 
 	}
 }

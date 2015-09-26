@@ -15,6 +15,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     Board board = null;
     Board backupBoard = null;
     ExecuteGame executeGameStub = null;
+    ExecuteGame backupExecuteGameStub = null;
+    
     private static final class Lock { }
     private final Object lock = new Lock();
     boolean isClientPrimary = false;
@@ -83,10 +85,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      * @throws IOException 
      * @throws InterruptedException 
      * */
-    public boolean isBackupAlive(Board board){
+    public boolean isBackupAlive(ExecuteGame executeGameObj) throws InterruptedException, IOException{
 //    	resetConsoleMode();
-    	backupBoard = board;
-//    	logObject.info("Back Copy : Treasure Count is "+backupBoard.getTreasureListCurrentSize());
+    	backupExecuteGameStub = executeGameObj;
+//    	logObject.info("Back Copy : Treasure Count is "+backupExecuteGameStub.getBoard().getTreasureListCurrentSize());
 //    	changeConsoleModeStty();
     	return true;
     }
@@ -193,10 +195,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     }
     
 public static void main(String[] args) throws InterruptedException, IOException {
-
     Client clientObj = new Client();
     clientObj.startClient(args);
-    
-
     }
 }

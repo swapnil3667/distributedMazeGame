@@ -110,8 +110,9 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	public void selectPlayerForBackup() throws RemoteException{
 		logObject.info("Selecting back up from all players");
 		Board board = serverObj.getExecuteGameObj().getBoard();
-		List<Player> playerList = board.getPlayerList(); 
-		int numberOfPlayer = playerList.size();
+		List<Player> playerList = board.getPlayerList();
+		List<ClientInterface> clientsList = serverObj.getExecuteGameObj().clientList;
+		int numberOfPlayer = clientsList.size();
 		Random randomGenerator = new Random();
 		int randPlayerIdx = randomGenerator.nextInt(numberOfPlayer);
 		while( serverObj.getExecuteGameObj().clientList.get(randPlayerIdx).getSelfId()== clientObj.getSelfId()){
@@ -123,6 +124,26 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		logObject.info("Player with id "+backupClientPlayer.getSelfId()+" selected as backup server");
 	}
 	
+
+	@Override
+	public void run() {
+		try{
+				while(backupClientPlayer.isBackupAlive(serverObj.getExecuteGameObj())){}
+		}catch(RemoteException e){
+			try {
+				serverObj.getExecuteGameObj().resetConsoleMode();
+			} catch (InterruptedException e1) {} catch (IOException e1) {}
+			logObject.info("Back up server is down, picking another backup");
+			try {
+				serverObj.getExecuteGameObj().clientList.remove(backupClientPlayer);	//remove client that was acting as back up
+				selectPlayerForBackup();												//select new backup from list of clients
+				new Thread(this).start();												//start polling with new backup
+			} catch (RemoteException e2) {}
+			try {
+				serverObj.getExecuteGameObj().changeConsoleModeStty();
+			} catch (InterruptedException e1) {} catch (IOException e1) {}
+		} catch (InterruptedException e) {} catch (IOException e) {} 
+	}
 	
 	public static void main(String[] args) throws InterruptedException, IOException {
 		PeerImpl peerObj = new PeerImpl();
@@ -131,19 +152,4 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		else peerObj.startClientOnThisPeer(args);
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		try{
-				while(backupClientPlayer.isBackupAlive(serverObj.getExecuteGameObj().getBoard())){}
-		}catch(RemoteException e){
-			try {
-				serverObj.getExecuteGameObj().resetConsoleMode();
-			} catch (InterruptedException e1) {} catch (IOException e1) {}
-			logObject.info("Back up server is down, picking another backup");
-			try {
-				serverObj.getExecuteGameObj().changeConsoleModeStty();
-			} catch (InterruptedException e1) {} catch (IOException e1) {}
-		} 
-	}
 }

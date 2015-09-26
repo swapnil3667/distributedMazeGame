@@ -13,5 +13,5 @@ public interface ClientInterface extends Remote {
     public boolean getIsClientPrimary() throws RemoteException;
     public void setIsClientBackup(boolean isClientSecondary) throws RemoteException;
     public boolean getIsClientBackup() throws RemoteException;
-    public boolean isBackupAlive(Board board) throws RemoteException;
+    public boolean isBackupAlive(ExecuteGame backExecuteGameObj) throws RemoteException, InterruptedException, IOException;
 }

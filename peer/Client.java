@@ -105,6 +105,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     	else if(consoleInput == 97) return "left";
     	else if(consoleInput == 115) return "down";
     	else if(consoleInput == 100) return "right";
+    	else if (consoleInput == 114) return "refresh";
     	else return "invalid";
     }
     
@@ -171,28 +172,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     		}
     }
     
-    /**
-     * Method to start player on the peer that is
-     * also acting as a primary server
-     * */
-    public void startClientAtSelfPeer(){
-    	/*if (System.getSecurityManager() == null) {
-    		System.setSecurityManager(new SecurityManager());
-    	}
-    	try {
-    		if(executeGameStub.joinGame(this)){
-    			logObject.info("Request processed at server side, id assigned : "+selfId);
-    		}
-    		
-    		waitForServerCallBack();
-    		board.printBoard(selfId);
-    		enablePlayerMove();
-    		
-    		} catch (Exception e) {
-    		    System.err.println("Client exception: " + e.toString());
-    		    e.printStackTrace();
-    		}*/
-    }
     
 public static void main(String[] args) throws InterruptedException, IOException {
     Client clientObj = new Client();

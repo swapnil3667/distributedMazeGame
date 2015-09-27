@@ -84,8 +84,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		new Thread(this).start();
 		
 		
-		/*Setting execute game stub (which is a remote stub for remote player) for client/player
-		at this peer*/
+		/*Setting execute game stub for client/player at this peer*/
 		clientObj.setIsClientPrimary(true);
 		clientObj.setExecuteGameObj(serverObj.getExecuteGameObj());
 		clientObj.enablePlayerMove();

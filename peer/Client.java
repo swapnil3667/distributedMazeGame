@@ -52,6 +52,14 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     	return isClientSecondary;
     }
     
+    public void setBackupExecuteGameStub(ExecuteGame backupExecuteGameStub){
+    	this.backupExecuteGameStub = backupExecuteGameStub;
+    }
+    
+    public ExecuteGame getBackupExecuteGameStub(){
+    	return backupExecuteGameStub;
+    }
+    
     /**
      * Method to change console mode from
      * buffered to real time
@@ -78,7 +86,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
       }
       
     }
-
+    
+    public void startBackupServerOnThisPeer() throws RemoteException{
+    }
+    
     /**
      * Method that primary server calls to see if back up
      * is up and running
@@ -125,11 +136,19 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 				if(consoleInput == 120) break; //breaks on 'X' press
 
 			String directionToMove = getDirectionOnKeyPress(consoleInput);
-
-			//Calling move player to test
-			board = executeGameStub.movePlayer(getSelfId(), directionToMove);
-			//Printing current score sheet
-			board.printScoresDuringGame(getSelfId());
+			try{
+				//Calling move player to test
+				board = executeGameStub.movePlayer(getSelfId(), directionToMove);
+			}catch (RemoteException e){
+//				setBackupExecuteGameStub(executeGameStub);
+				executeGameStub = backupExecuteGameStub;
+				executeGameStub.setFlagTwentySecOver(true);
+				board = executeGameStub.movePlayer(getSelfId(), directionToMove);
+				
+			}finally{
+				//Printing current score sheet
+				board.printScoresDuringGame(getSelfId());
+			}
 			 
 //			System.out.println("After move");
 			Runtime.getRuntime().exec("clear");

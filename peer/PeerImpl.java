@@ -53,6 +53,16 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		return isPlayerBackup;
 	}
 	
+	/**method to a backup server on this peer 
+	 * @throws RemoteException 
+	 **/
+	public void startServerAsBackup() throws RemoteException{
+		logObject.info("Initiating backup");
+		serverObj = new Server();
+		//serverObj.getExecuteGameObj().setFlagTwentySecOver(true);
+	}
+	
+	
 	/**
 	 * method to start primary server on this peer
 	 * @throws IOException 

@@ -11,5 +11,6 @@ public interface ServerInterface {
 	public void waitTwentySecAtServer();
 	public void bindNameToStubAtRegistry();
 	public ExecuteGameImpl getExecuteGameObj();
+	public void setExecuteGameObj(ExecuteGame executeGameObj);
 	
 }

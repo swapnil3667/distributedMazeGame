@@ -51,6 +51,9 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		return board;
 	}
 
+	public void removeClientFromClientList(ClientInterface removeClient) throws RemoteException{
+		clientList.remove(removeClient);
+	}
 	/**
      * Method to change console mode from
      * buffered to real time
@@ -131,15 +134,16 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	}
 
 
-	public void setFlagTwentySecOver(boolean flag){
+	public void setFlagTwentySecOver(boolean flag) throws RemoteException{
 		this.isTwentySecOver = flag;
 	}
 
 	/**
 	 * Method that makes the server wait for twenty seconds
 	 * so that all players can join
+	 * @throws RemoteException 
 	 * */
-	public void waitTwentySeconds(){
+	public void waitTwentySeconds() throws RemoteException{
 		setFlagTwentySecOver(false);
 		long end = System.currentTimeMillis() + 20000;
 		while(System.currentTimeMillis() < end){} 	//runs for 20 sec

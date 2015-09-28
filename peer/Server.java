@@ -15,6 +15,9 @@ public class Server implements ServerInterface{
 		return executeGameObj;
 	}
 	
+	public void setExecuteGameObj(ExecuteGame executeGameObj){
+		this.executeGameObj = (ExecuteGameImpl) executeGameObj;
+	}
 	
 	/**
 	 * Call back to all clients with beginning board
@@ -22,10 +25,8 @@ public class Server implements ServerInterface{
 	 * @throws RemoteException 
 	 * */
 	public void callBackAllClients() throws RemoteException{
-		int i =1;
 		for( ClientInterface eachClient : executeGameObj.clientList){
 			logObject.info("Call back executed for player with id "+eachClient.getSelfId());
-			String mesg = ("Client "+ i +" has been registered");
 			// Send the alert to the given user.
 			// If this fails, remove them from the list
 			try {
@@ -36,7 +37,6 @@ public class Server implements ServerInterface{
 				System.out.println(re);
 				executeGameObj.clientList.remove(eachClient);
 			}
-			i++;
 		}
 	}
 	

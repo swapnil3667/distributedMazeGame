@@ -55,8 +55,9 @@ public class Server implements ServerInterface{
 	/**
 	 * Method to start waiting time of 20 seconds
 	 * at server side
+	 * @throws RemoteException 
 	 * */
-	public void waitTwentySecAtServer(){
+	public void waitTwentySecAtServer() throws RemoteException{
 		executeGameObj.waitTwentySeconds();
 	}
 	

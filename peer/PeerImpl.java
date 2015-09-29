@@ -2,6 +2,7 @@
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.ConnectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 import java.util.List;
@@ -67,8 +68,9 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	 * method to start primary server on this peer
 	 * @throws IOException 
 	 * @throws InterruptedException 
+	 * @throws NotBoundException 
 	 * */
-	public void startServerAsPrimary() throws InterruptedException, IOException{
+	public void startServerAsPrimary() throws InterruptedException, IOException, NotBoundException{
 		serverObj = new Server();
 		serverObj.takeInputAtServer();
 		serverObj.bindNameToStubAtRegistry();
@@ -130,6 +132,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		
 //		Player backupPlayer = playerList.get(randPlayerIdx);
 		backupClientPlayer = serverObj.getExecuteGameObj().clientList.get(randPlayerIdx);
+		backupClientPlayer.setIsClientBackup(true);
 		logObject.info("Player with id "+backupClientPlayer.getSelfId()+" selected as backup server");
 	}
 	
@@ -138,7 +141,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	public void run() {
 		try{
 				while(backupClientPlayer.isBackupAlive(serverObj.getExecuteGameObj())){}
-		}catch(RemoteException e){
+		}catch(RemoteException | RuntimeException e3){
 			try {
 				serverObj.getExecuteGameObj().resetConsoleMode();
 			} catch (InterruptedException e1) {} catch (IOException e1) {}
@@ -152,13 +155,13 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 				serverObj.getExecuteGameObj().changeConsoleModeStty();
 			} catch (InterruptedException e1) {} catch (IOException e1) {}
 		} catch (InterruptedException e) {} catch (IOException e) {} 
+		
 	}
 	
-	public static void main(String[] args) throws InterruptedException, IOException {
+	public static void main(String[] args) throws InterruptedException, IOException, NotBoundException {
 		PeerImpl peerObj = new PeerImpl();
 		boolean isThisPrimaryOrBackup = peerObj.isPrimaryOrBackup(args);
 		if(isThisPrimaryOrBackup) peerObj.startServerAsPrimary();
 		else peerObj.startClientOnThisPeer(args);
 	}
-
 }

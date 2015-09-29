@@ -8,7 +8,7 @@ public interface ServerInterface {
 //	public ExecuteGameImpl getExecuteGameObj();
 	public void callBackAllClients() throws RemoteException;
 	public void takeInputAtServer();
-	public void waitTwentySecAtServer();
+	public void waitTwentySecAtServer() throws RemoteException;
 	public void bindNameToStubAtRegistry();
 	public ExecuteGameImpl getExecuteGameObj();
 	public void setExecuteGameObj(ExecuteGame executeGameObj);

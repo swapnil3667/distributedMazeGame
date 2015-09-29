@@ -7,13 +7,13 @@ public interface ClientInterface extends Remote {
 	public void setSelfId(int id) throws RemoteException;
 	public int getSelfId() throws RemoteException;
 	public void startClient(String[] args) throws RemoteException;
-	public void enablePlayerMove() throws RemoteException, InterruptedException, IOException;
+	public void enablePlayerMove() throws RemoteException, InterruptedException, IOException, NotBoundException;
 	public void setExecuteGameObj(ExecuteGame executeGameStub) throws RemoteException;
 	public void setIsClientPrimary(boolean isClientPrimary) throws RemoteException;
     public boolean getIsClientPrimary() throws RemoteException;
     public void setIsClientBackup(boolean isClientSecondary) throws RemoteException;
     public boolean getIsClientBackup() throws RemoteException;
     public boolean isBackupAlive(ExecuteGame backExecuteGameObj) throws RemoteException, InterruptedException, IOException;
-    public void setBackupExecuteGameStub(ExecuteGame backupExecuteGameStub);
-    public ExecuteGame getBackupExecuteGameStub();
+    public void setBackupExecuteGameStub(ExecuteGame backupExecuteGameStub) throws RemoteException;
+    public ExecuteGame getBackupExecuteGameStub() throws RemoteException;
 }

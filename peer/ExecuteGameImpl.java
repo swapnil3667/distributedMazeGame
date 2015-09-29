@@ -40,7 +40,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 
 	/*
 	 * Default constructor made private for singleton-ness*/
-	private ExecuteGameImpl() {	}
+	public ExecuteGameImpl() {	}
 
 
 	public void setBoard(Board board){
@@ -54,6 +54,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	public void removeClientFromClientList(ClientInterface removeClient) throws RemoteException{
 		clientList.remove(removeClient);
 	}
+	
 	/**
      * Method to change console mode from
      * buffered to real time
@@ -190,7 +191,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	}
 
 
-	public String testStringReponse(){
+	public String testStringReponse() throws RemoteException{
 		return "This is a test message from server";
 	}
 

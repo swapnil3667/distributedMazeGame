@@ -10,5 +10,8 @@ public interface Peer {
 	public void startClientOnThisPeer(String[] args) throws RemoteException;
 	public void selectPlayerForBackup() throws RemoteException;
 	public void startServerAsBackup() throws RemoteException;
-
+	public void setServerObj(ServerInterface serverObj);
+	public ServerInterface getServerObj();
+	public void setClientObj(ClientInterface clientObj);
+	public ClientInterface getClientObj();
 }

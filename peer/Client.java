@@ -110,13 +110,13 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      * @throws InterruptedException 
      * @throws CloneNotSupportedException 
      * */
-    public boolean isBackupAlive(Board board,List<ClientInterface> listOfClients) throws InterruptedException, IOException, RemoteException, CloneNotSupportedException{
+    public boolean isBackupAlive(Board board,List<ClientInterface> listOfClients, ClientInterface primaryClient) throws InterruptedException, IOException, RemoteException, CloneNotSupportedException{
 	    	
 	    	backupExecuteGameStub.setBoard(board);
 	    	backupExecuteGameStub.setClientList(listOfClients);
 	    	
 	    	try{
-	    		if(isClientSecondary) executeGameStub.isPrimaryAlive();
+	    		executeGameStub.isPrimaryAlive();
 	    	}catch (RemoteException e){
 	    		resetConsoleMode();
 	    		logObject.info("Primary is dead, making Backup as Primary");
@@ -124,19 +124,32 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 	    		try {
 	    			ExecuteGame stub = null;
 	    			resetConsoleMode();
-					logObject.info("Current number of treasure"+backupExecuteGameStub.getBoard().getTreasureListCurrentSize());
+					logObject.info("Current number of treasure : "+backupExecuteGameStub.getBoard().getTreasureListCurrentSize());
 					changeConsoleModeStty();
 					Registry registry = LocateRegistry.getRegistry();
 					registry.unbind("Primary");
+					
+					backupExecuteGameStub.getClientList().remove(primaryClient);
+					
 					stub = (ExecuteGame) UnicastRemoteObject.exportObject(backupExecuteGameStub, 0);
 					registry.bind("Primary", stub);
+					
+					
+					ServerInterface newServer = new Server();
+					newServer.setExecuteGameObj(backupExecuteGameStub);
+					Peer newPeer = new PeerImpl();
+					newPeer.setClientObj(this);
+					newPeer.setServerObj(newServer);
+					newPeer.selectPlayerForBackup();
+//					new Thread((Runnable) newPeer).start();
+					
 				} catch (RemoteException e1) {} catch (AlreadyBoundException e1) {} catch (NotBoundException e1) {}
 	    	}
 	    	return true;
     }
     
     
-    /**T
+    /**
      * Returns direction as string based on key
      * pressed on key board
      * @param consoleInput : ascii value of key pressed on console
@@ -180,10 +193,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 		    		System.setSecurityManager(new SecurityManager());
 		    	}
 				Registry registry = LocateRegistry.getRegistry(host);
-	    		executeGameStubNew = (ExecuteGame) registry.lookup("Primary");
-	    		logObject.info(executeGameStubNew.testStringReponse());
-				executeGameStubNew.setFlagTwentySecOver(true);
-				board = executeGameStubNew.movePlayer(getSelfId(), directionToMove);
+	    		executeGameStub = (ExecuteGame) registry.lookup("Primary");
+	    		logObject.info(executeGameStub.testStringReponse());
+				executeGameStub.setFlagTwentySecOver(true);
+				board = executeGameStub.movePlayer(getSelfId(), directionToMove);
 				
 			}finally{
 				//Printing current score sheet

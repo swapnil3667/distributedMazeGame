@@ -19,6 +19,8 @@ public class Server implements ServerInterface{
 		this.executeGameObj = (ExecuteGameImpl) executeGameObj;
 	}
 	
+	
+	
 	/**
 	 * Call back to all clients with beginning board
 	 * state

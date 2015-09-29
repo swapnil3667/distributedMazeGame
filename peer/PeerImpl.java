@@ -54,6 +54,23 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		return isPlayerBackup;
 	}
 	
+
+	public void setServerObj(ServerInterface serverObj){
+		this.serverObj = serverObj;
+	}
+	public ServerInterface getServerObj(){
+		return serverObj;
+	}
+	
+	public void setClientObj(ClientInterface clientObj){
+		this.clientObj = clientObj;
+	}
+	
+	public ClientInterface getClientObj(){
+		return clientObj;
+	}
+	
+	
 	/**method to a backup server on this peer 
 	 * @throws RemoteException 
 	 **/
@@ -119,28 +136,29 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	 * @throws RemoteException 
 	 * */
 	public void selectPlayerForBackup() throws RemoteException{
-		logObject.info("Selecting back up from all players");
 		Board board = serverObj.getExecuteGameObj().getBoard();
 		List<Player> playerList = board.getPlayerList();
-		List<ClientInterface> clientsList = serverObj.getExecuteGameObj().clientList;
+		List<ClientInterface> clientsList = serverObj.getExecuteGameObj().getClientList();
 		int numberOfPlayer = clientsList.size();
 		Random randomGenerator = new Random();
 		int randPlayerIdx = randomGenerator.nextInt(numberOfPlayer);
-		while( serverObj.getExecuteGameObj().clientList.get(randPlayerIdx).getSelfId()== clientObj.getSelfId()){
+		while( serverObj.getExecuteGameObj().getClientList().get(randPlayerIdx).getSelfId()== clientObj.getSelfId()){
 			randPlayerIdx = randomGenerator.nextInt(numberOfPlayer);
 		}
 		
 //		Player backupPlayer = playerList.get(randPlayerIdx);
+		logObject.info("Random player index check "+ randPlayerIdx);
 		backupClientPlayer = serverObj.getExecuteGameObj().clientList.get(randPlayerIdx);
 		backupClientPlayer.setIsClientBackup(true);
 		logObject.info("Player with id "+backupClientPlayer.getSelfId()+" selected as backup server");
+		
 	}
 	
 
 	@Override
 	public void run() {
 		try{
-			while(backupClientPlayer.isBackupAlive(serverObj.getExecuteGameObj().getBoard(),serverObj.getExecuteGameObj().clientList)){}
+			while(backupClientPlayer.isBackupAlive(serverObj.getExecuteGameObj().getBoard(),serverObj.getExecuteGameObj().clientList, clientObj)){}
 		}catch(RemoteException | RuntimeException | CloneNotSupportedException e3){
 			try {
 				serverObj.getExecuteGameObj().resetConsoleMode();

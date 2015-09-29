@@ -62,6 +62,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable{
 		clientList.remove(removeClient);
 	}
 	
+	
 	/**
      * Method to change console mode from
      * buffered to real time

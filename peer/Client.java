@@ -15,7 +15,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 
-public class Client extends UnicastRemoteObject implements ClientInterface {
+public class Client extends UnicastRemoteObject implements ClientInterface, Runnable {
     int selfId = 0;
     private static Logger logObject = Logger.getLogger(Client.class.getName());
     Board board = null;
@@ -24,7 +24,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     ExecuteGame executeGameStubNew = null;
     ExecuteGame backupExecuteGameStub = new ExecuteGameImpl();
     String host = null;
-    
+    Thread pollingWithBackup = null;
+    ClientInterface primaryClient = null;
     
     private static final class Lock { }
     private final Object lock = new Lock();
@@ -53,8 +54,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     	return isClientPrimary;
     }
     
-    public void setIsClientBackup(boolean isClientSecondary) throws RemoteException{
+    public void setIsClientBackup(boolean isClientSecondary) throws RemoteException, InterruptedException{
     	this.isClientSecondary = isClientSecondary;
+    	Thread pollingWithPrim = new Thread(this);
+    	pollingWithPrim.start();
     }
     
     public boolean getIsClientBackup() throws RemoteException{
@@ -114,8 +117,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 	    	
 	    	backupExecuteGameStub.setBoard(board);
 	    	backupExecuteGameStub.setClientList(listOfClients);
+	    	this.primaryClient = primaryClient;
 	    	
-	    	try{
+	    	/*try{
 	    		executeGameStub.isPrimaryAlive();
 	    	}catch (RemoteException e){
 	    		resetConsoleMode();
@@ -128,9 +132,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 					changeConsoleModeStty();
 					Registry registry = LocateRegistry.getRegistry();
 					registry.unbind("Primary");
-					
 					backupExecuteGameStub.getClientList().remove(primaryClient);
-					
 					stub = (ExecuteGame) UnicastRemoteObject.exportObject(backupExecuteGameStub, 0);
 					registry.bind("Primary", stub);
 					
@@ -141,10 +143,12 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 					newPeer.setClientObj(this);
 					newPeer.setServerObj(newServer);
 					newPeer.selectPlayerForBackup();
+					pollingWithBackup = new Thread((Runnable) newPeer);
+					pollingWithBackup.start();
 //					new Thread((Runnable) newPeer).start();
 					
 				} catch (RemoteException e1) {} catch (AlreadyBoundException e1) {} catch (NotBoundException e1) {}
-	    	}
+	    	}*/
 	    	return true;
     }
     
@@ -194,7 +198,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 		    	}
 				Registry registry = LocateRegistry.getRegistry(host);
 	    		executeGameStub = (ExecuteGame) registry.lookup("Primary");
-	    		logObject.info(executeGameStub.testStringReponse());
 				executeGameStub.setFlagTwentySecOver(true);
 				board = executeGameStub.movePlayer(getSelfId(), directionToMove);
 				
@@ -247,23 +250,53 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     		}
     }
     
-    /*@Override
+    @Override
     public void run() {
     	try{
     		while(executeGameStub.isPrimaryAlive()){};
     	}catch(RemoteException e){
-    		logObject.info("Primary is dead, making Backup as Primary");
-    		try {
-    			ExecuteGame stub = null;
-				Registry registry = LocateRegistry.getRegistry();
-//				registry.unbind("Primary");
-				logObject.info("Current number of treasure"+backupExecuteGameStub.getBoard().getNoOfTreasure());
-				stub = (ExecuteGame) UnicastRemoteObject.exportObject(backupExecuteGameStub, 0);
-				registry.bind("Primary", stub);
-				logObject.info(stub.testStringReponse());
-			} catch (RemoteException e1) {} catch (AlreadyBoundException e1) {}
+    		
+    		try{
+    			if (System.getSecurityManager() == null) {
+		    		System.setSecurityManager(new SecurityManager());
+		    	}
+				Registry registry = LocateRegistry.getRegistry(host);
+	    		executeGameStub = (ExecuteGame) registry.lookup("Primary");
+	    		while(executeGameStub.isPrimaryAlive()){};
+    		}catch (RemoteException e7){
+	    		logObject.info("Primary is dead, making Backup as Primary");
+	    		try{
+	    		resetConsoleMode();
+	    		logObject.info("Primary is dead, making Backup as Primary");
+	    		changeConsoleModeStty();
+	    		}catch (InterruptedException | IOException e5){}
+	    		try {
+	    			ExecuteGame stub = null;
+	    			resetConsoleMode();
+	//				logObject.info("Current number of treasure : "+backupExecuteGameStub.getBoard().getTreasureListCurrentSize());
+					changeConsoleModeStty();
+					Registry registry = LocateRegistry.getRegistry();
+					registry.unbind("Primary");
+					backupExecuteGameStub.getClientList().remove(primaryClient);
+					stub = (ExecuteGame) UnicastRemoteObject.exportObject(backupExecuteGameStub, 0);
+					registry.bind("Primary", stub);
+					
+					
+					ServerInterface newServer = new Server();
+					newServer.setExecuteGameObj(backupExecuteGameStub);
+					Peer newPeer = new PeerImpl();
+					newPeer.setClientObj(this);
+					newPeer.setServerObj(newServer);
+					newPeer.selectPlayerForBackup();	//Is back up alive thread
+					pollingWithBackup = new Thread((Runnable) newPeer);
+					pollingWithBackup.start();
+	//					new Thread((Runnable) newPeer).start();
+						
+					} catch (RemoteException e2) {} catch (AlreadyBoundException e3) {} catch (NotBoundException e4) {} catch (InterruptedException e1) {} catch (IOException e1) {}
+		    	} catch (NotBoundException e1) {}
+    		}
     	}
-    }*/
+    
     
 public static void main(String[] args) throws InterruptedException, IOException {
     Client clientObj = new Client();

@@ -1,7 +1,6 @@
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
@@ -27,6 +26,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	ClientInterface backupClientPlayer = null;
 	int sizeOfBoard = 0;
 	int noOfTreasures = 0;
+	Thread pollingWithBackup = null;
 	
 	
 	
@@ -110,7 +110,8 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		serverObj.callBackAllClients();
 		serverObj.getExecuteGameObj().getBoard().printBoard(clientObj.getSelfId());
 		//This thread does polling with back up server
-		new Thread(this).start();
+		pollingWithBackup = new Thread(this);
+		pollingWithBackup.start();
 		
 		
 		/*Setting execute game stub for client/player at this peer*/
@@ -135,7 +136,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	 * right before call back to all players/clients
 	 * @throws RemoteException 
 	 * */
-	public void selectPlayerForBackup() throws RemoteException{
+	public void selectPlayerForBackup() throws RemoteException, InterruptedException{
 		Board board = serverObj.getExecuteGameObj().getBoard();
 		List<Player> playerList = board.getPlayerList();
 		List<ClientInterface> clientsList = serverObj.getExecuteGameObj().getClientList();
@@ -147,10 +148,10 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		}
 		
 //		Player backupPlayer = playerList.get(randPlayerIdx);
-		logObject.info("Random player index check "+ randPlayerIdx);
 		backupClientPlayer = serverObj.getExecuteGameObj().clientList.get(randPlayerIdx);
 		backupClientPlayer.setIsClientBackup(true);
 		logObject.info("Player with id "+backupClientPlayer.getSelfId()+" selected as backup server");
+//		new Thread((Runnable) backupClientPlayer).start();
 		
 	}
 	
@@ -167,13 +168,13 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 			try {
 				serverObj.getExecuteGameObj().clientList.remove(backupClientPlayer);	//remove client that was acting as back up
 				selectPlayerForBackup();												//select new backup from list of clients
+//				pollingWithBackup.stop();
 				new Thread(this).start();												//start polling with new backup
-			} catch (RemoteException e2) {}
+			} catch (RemoteException e2) {} catch (InterruptedException e) {}
 			try {
 				serverObj.getExecuteGameObj().changeConsoleModeStty();
 			} catch (InterruptedException e1) {} catch (IOException e1) {}
 		} catch (InterruptedException e) {} catch (IOException e) {} 
-		
 	}
 	
 	public static void main(String[] args) throws InterruptedException, IOException, NotBoundException {

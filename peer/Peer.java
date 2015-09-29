@@ -8,7 +8,7 @@ public interface Peer {
 	public boolean getIsPlayerBackup();
 	public void startServerAsPrimary() throws RemoteException, InterruptedException, IOException, NotBoundException;
 	public void startClientOnThisPeer(String[] args) throws RemoteException;
-	public void selectPlayerForBackup() throws RemoteException;
+	public void selectPlayerForBackup() throws RemoteException, InterruptedException;
 	public void startServerAsBackup() throws RemoteException;
 	public void setServerObj(ServerInterface serverObj);
 	public ServerInterface getServerObj();

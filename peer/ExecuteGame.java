@@ -1,4 +1,5 @@
 import java.rmi.RemoteException;
+import java.util.List;
 import java.io.IOException;
 import java.rmi.Remote;
 
@@ -19,4 +20,6 @@ public interface ExecuteGame extends Remote {
 	public ClientInterface getClientObjectWithId(int clientPlayerId) throws RemoteException;
 	public boolean isPrimaryAlive() throws RemoteException;
 	public void removeClientFromClientList(ClientInterface removeClient) throws RemoteException;
+	public void setClientList(List<ClientInterface> clientList) throws RemoteException;
+	public List<ClientInterface> getClientList() throws RemoteException;
 }

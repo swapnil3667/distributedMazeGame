@@ -77,19 +77,11 @@ public class Server implements ServerInterface{
 			registry.bind("Primary", stub);
 			System.err.println("Server ready");
 
-			/*executeGameObj.waitTwentySeconds();
-			logObject.info("Waiting period over, board set!! Size = "+executeGameObj.board.getSize());
-			
-			callBackAllClients();*/
 		} catch (Exception e) {
-			
 			try{
 				registry.unbind("Primary");
 				registry.bind("Primary",stub);
 				System.err.println("Server ready");
- 				/*executeGameObj.waitTwentySeconds();
- 				callBackAllClients();*/
-
 				}catch(Exception ee){
 				System.err.println("Server exception: " + ee.toString());
 				ee.printStackTrace();

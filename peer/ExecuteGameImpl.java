@@ -19,7 +19,7 @@ import java.util.List;
  * At the end of 20 Sec, startGame method will respond to all the
  * connected players with initial maze.
  * */
-public class ExecuteGameImpl implements ExecuteGame, Serializable {
+public class ExecuteGameImpl implements ExecuteGame, Serializable{
 	private Board board = null;
 	int sizeOfBoard=0;
 	int noOfTreasures = 0;
@@ -43,6 +43,13 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 	public ExecuteGameImpl() {	}
 
 
+	public void setClientList(List<ClientInterface> clientList) throws RemoteException{
+		this.clientList = clientList;
+	}
+	public List<ClientInterface> getClientList() throws RemoteException{
+		return clientList;
+	}
+	
 	public void setBoard(Board board){
 		this.board = board;
 	}
@@ -149,12 +156,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		long end = System.currentTimeMillis() + 20000;
 		while(System.currentTimeMillis() < end){} 	//runs for 20 sec
 		System.out.println("Joining period over");
-//		setFlag(true);
 		logObject.info("Joining time over at server side");
-
-		//Generating treasures at the end of 20 seconds
-		/*board.generateTreasures();
-		board.printCurrentBoardState();*/
 	}
 
 	
@@ -208,5 +210,4 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable {
 		changeConsoleModeStty();
 		return board;
 	}
-
 }

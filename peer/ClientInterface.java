@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.rmi.*;
+import java.util.List;
 
 /** Client -- the interface for the client callback */
 public interface ClientInterface extends Remote {
@@ -13,7 +14,8 @@ public interface ClientInterface extends Remote {
     public boolean getIsClientPrimary() throws RemoteException;
     public void setIsClientBackup(boolean isClientSecondary) throws RemoteException;
     public boolean getIsClientBackup() throws RemoteException;
-    public boolean isBackupAlive(ExecuteGame backExecuteGameObj) throws RemoteException, InterruptedException, IOException;
+    public boolean isBackupAlive(Board board,List<ClientInterface> listOfClients) throws RemoteException, InterruptedException, IOException, CloneNotSupportedException;
     public void setBackupExecuteGameStub(ExecuteGame backupExecuteGameStub) throws RemoteException;
     public ExecuteGame getBackupExecuteGameStub() throws RemoteException;
+    
 }

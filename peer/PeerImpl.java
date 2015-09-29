@@ -140,8 +140,8 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	@Override
 	public void run() {
 		try{
-				while(backupClientPlayer.isBackupAlive(serverObj.getExecuteGameObj())){}
-		}catch(RemoteException | RuntimeException e3){
+			while(backupClientPlayer.isBackupAlive(serverObj.getExecuteGameObj().getBoard(),serverObj.getExecuteGameObj().clientList)){}
+		}catch(RemoteException | RuntimeException | CloneNotSupportedException e3){
 			try {
 				serverObj.getExecuteGameObj().resetConsoleMode();
 			} catch (InterruptedException e1) {} catch (IOException e1) {}

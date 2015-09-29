@@ -5,7 +5,11 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.io.Serializable;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.logging.Logger;
+
+import javax.swing.text.DefaultEditorKit.CopyAction;
+
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -18,7 +22,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
     Board backupBoard = null;
     ExecuteGame executeGameStub = null;
     ExecuteGame executeGameStubNew = null;
-    volatile ExecuteGame backupExecuteGameStub = null;
+    ExecuteGame backupExecuteGameStub = new ExecuteGameImpl();
     String host = null;
     
     
@@ -84,7 +88,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
     public void callBackFromServer(Board board){
       System.out.println("Call Back : This is your starting board\n");
-//      board.printBoard(selfId);
       this.board = board;
       synchronized (lock) {
     	    lock.notifyAll();
@@ -105,30 +108,31 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
      * is up and running
      * @throws IOException 
      * @throws InterruptedException 
+     * @throws CloneNotSupportedException 
      * */
-    public boolean isBackupAlive(ExecuteGame executeGameObj) throws InterruptedException, IOException{
-//    	synchronized(backupExecuteGameStub){
-	    	resetConsoleMode();
-	    	backupExecuteGameStub = executeGameObj;
-//	    	logObject.info("Back Copy : Treasure Count is "+backupExecuteGameStub.getBoard().getTreasureListCurrentSize());
-	    	changeConsoleModeStty();
+    public boolean isBackupAlive(Board board,List<ClientInterface> listOfClients) throws InterruptedException, IOException, RemoteException, CloneNotSupportedException{
+	    	
+	    	backupExecuteGameStub.setBoard(board);
+	    	backupExecuteGameStub.setClientList(listOfClients);
+	    	
 	    	try{
 	    		if(isClientSecondary) executeGameStub.isPrimaryAlive();
 	    	}catch (RemoteException e){
+	    		resetConsoleMode();
 	    		logObject.info("Primary is dead, making Backup as Primary");
-				logObject.info("1 Current number of treasure"+backupExecuteGameStub.getBoard().getNoOfTreasure());
+	    		changeConsoleModeStty();
 	    		try {
 	    			ExecuteGame stub = null;
-					logObject.info("2 Current number of treasure"+backupExecuteGameStub.getBoard().getNoOfTreasure());
+	    			resetConsoleMode();
+					logObject.info("Current number of treasure"+backupExecuteGameStub.getBoard().getTreasureListCurrentSize());
+					changeConsoleModeStty();
 					Registry registry = LocateRegistry.getRegistry();
-//					registry.unbind("Primary");
+					registry.unbind("Primary");
 					stub = (ExecuteGame) UnicastRemoteObject.exportObject(backupExecuteGameStub, 0);
 					registry.bind("Primary", stub);
-					logObject.info(stub.testStringReponse());
-				} catch (RemoteException e1) {} catch (AlreadyBoundException e1) {}
+				} catch (RemoteException e1) {} catch (AlreadyBoundException e1) {} catch (NotBoundException e1) {}
 	    	}
 	    	return true;
-//    	}
     }
     
     

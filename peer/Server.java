@@ -74,6 +74,7 @@ public class Server implements ServerInterface{
 		executeGameObj.init(sizeOfBoard, noOfTreasures);
 
 		try {
+            System.setProperty("java.rmi.server.hostname","127.0.0.1");
 			stub = (ExecuteGame) UnicastRemoteObject.exportObject(executeGameObj, 0);
 			registry = LocateRegistry.getRegistry();
 			registry.bind("Primary", stub);

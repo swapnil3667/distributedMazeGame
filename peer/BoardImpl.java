@@ -15,6 +15,18 @@ public class BoardImpl implements Board, Serializable{
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
 	private static Board board = null;
 
+	/*Colors*/
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+	
+	
 	public static Board getInstance(){
 		if (board == null){
 			board = new BoardImpl();
@@ -207,14 +219,17 @@ public class BoardImpl implements Board, Serializable{
 				Location location = eachTreasure.getLocation();
 				int x  = location.getX();
 				int y  = location.getY();
-				(rowList.get(x)).set(y,'T');
+				rowList.get(x).set(y,(char)(rowList.get(x).get(y)+1));  //(rowList.get(x)).set(y,'T');
 			}
 		}
 		
 		for (int i = 0; i < rowList.size(); i++) {
 			List<Character> t1 = rowList.get(i);
 			for (int j = 0; j < t1.size(); j++) {
-				System.out.print(t1.get(j) + " ");
+				if(t1.get(j) == 'S') System.out.print(ANSI_RED+t1.get(j) + " "+ANSI_RESET);
+				else if (t1.get(j) == 'P') System.out.print(ANSI_BLUE+t1.get(j) + " "+ANSI_RESET);
+				else if (t1.get(j) != 'S' && t1.get(j) != 'P' && t1.get(j) != '0') System.out.print(ANSI_GREEN+t1.get(j) + " "+ANSI_RESET);
+				else System.out.print(t1.get(j) + " ");
 			}
 			System.out.println();
 		}
@@ -285,18 +300,18 @@ public class BoardImpl implements Board, Serializable{
 	 * @throws InterruptedException 
 	 * */
 	public void checkPlayerOverlapwTreasure(Location location, Player player) throws InterruptedException, IOException{
-		Treasure toRemove = new TreasureImpl();
+		List<Treasure> toRemove = new ArrayList<Treasure>();
 		for(Treasure eachTreasure : treasureList){
 			if(eachTreasure.getLocation().getX() == location.getX() && eachTreasure.getLocation().getY() == location.getY()){
 				resetConsoleMode();
 				logObject.info("Player "+player.getId()+" got treasure ("+location.getX()+", "+location.getY()+")");
 				changeConsoleModeStty();
 				player.setTreasureCount(player.getTreasureCount() + eachTreasure.getValue());
-				toRemove = eachTreasure;
+				toRemove.add(eachTreasure);
 			}
 		}
 		
-		treasureList.remove(toRemove);
+		treasureList.removeAll(toRemove);
 	}
 	
 	/**

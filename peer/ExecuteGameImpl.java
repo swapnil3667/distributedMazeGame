@@ -40,7 +40,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable{
 
 	/*
 	 * Default constructor made private for singleton-ness*/
-	public ExecuteGameImpl() {	}
+	private ExecuteGameImpl() {	}
 
 
 	public void setClientList(List<ClientInterface> clientList) throws RemoteException{
@@ -154,7 +154,7 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable{
 	 * */
 	public void waitTwentySeconds() throws RemoteException{
 		setFlagTwentySecOver(false);
-		long end = System.currentTimeMillis() + 20000;
+		long end = System.currentTimeMillis() + 22000;
 		while(System.currentTimeMillis() < end){} 	//runs for 20 sec
 		System.out.println("Joining period over");
 		logObject.info("Joining time over at server side");
@@ -179,7 +179,6 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable{
 			Location location = generatePlayerLocation(id);
 			clientList.add(client);
 			
-
 			//Setting player parameters
 			Player player = new PlayerImpl(id);
 			player.setLocation(location);
@@ -187,8 +186,6 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable{
 			board.addPlayer(player);
 			logObject.info("Join request processed successfully. Player added to players list.");
 			return true;
-			//Return location to client that called joinGame
-//			return "Game joined by player "+noOfPlayers+" with id : "+id;
 		}
 		return false;
 	}
@@ -198,9 +195,11 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable{
 		return "This is a test message from server";
 	}
 
-	public Board movePlayer(int id, String moveDirection) throws InterruptedException, IOException{
+	synchronized public Board movePlayer(int id, String moveDirection) throws InterruptedException, IOException{
 		resetConsoleMode();
 		if(board.getTreasureListCurrentSize() != 0){
+			/*logObject.info("Sleeping thread on server for testing");
+			Thread.sleep(5000);*/
 			board.updatedPlayerLocation(id, moveDirection);
 		}else {
 			logObject.info("All treasure taken, Game Over!");

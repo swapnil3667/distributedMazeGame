@@ -230,7 +230,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 	    		executeGameStub = (ExecuteGame) registry.lookup("Primary");
 	    		while(executeGameStub.isPrimaryAlive()){};
     		}catch (RemoteException e7){
-//	    		logObject.info("Primary is dead, making Backup as Primary");
 	    		try{
 	    		resetConsoleMode();
 	    		logObject.info("Primary is dead, making Backup as Primary");
@@ -239,7 +238,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 	    		try {
 	    			ExecuteGame stub = null;
 	    			resetConsoleMode();
-	//				logObject.info("Current number of treasure : "+backupExecuteGameStub.getBoard().getTreasureListCurrentSize());
 					Registry registry = LocateRegistry.getRegistry();
 					registry.unbind("Primary");
 					backupExecuteGameStub.getClientList().remove(primaryClient);
@@ -256,7 +254,6 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 					pollingWithBackup = new Thread((Runnable) newPeer);
 					pollingWithBackup.start();
 					changeConsoleModeStty();
-	//					new Thread((Runnable) newPeer).start();
 						
 					} catch (RemoteException e2) {} catch (AlreadyBoundException e3) {} catch (NotBoundException e4) {} catch (InterruptedException e1) {} catch (IOException e1) {}
 		    	} catch (NotBoundException e1) {}

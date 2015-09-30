@@ -202,10 +202,10 @@ public class ExecuteGameImpl implements ExecuteGame, Serializable{
 			Thread.sleep(5000);*/
 			board.updatedPlayerLocation(id, moveDirection);
 		}else {
-			logObject.info("All treasure taken, Game Over!");
+//			logObject.info("All treasure taken, Game Over!");
 			areAllTreasuresTaken = true;
 			board.setIsGameOverFlag(true);
-			board.printFinalResultForServer();
+//			board.printFinalResultForServer();
 		}
 		changeConsoleModeStty();
 		return board;

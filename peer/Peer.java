@@ -14,4 +14,5 @@ public interface Peer {
 	public ServerInterface getServerObj();
 	public void setClientObj(ClientInterface clientObj);
 	public ClientInterface getClientObj();
+	public Thread getBackupPollingThread();
 }

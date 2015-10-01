@@ -26,7 +26,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	ClientInterface backupClientPlayer = null;
 	int sizeOfBoard = 0;
 	int noOfTreasures = 0;
-//	Thread pollingWithBackup = null;
+	Thread pollingWithBackup = null;
 	
 	
 	
@@ -70,6 +70,10 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		return clientObj;
 	}
 	
+	public Thread getBackupPollingThread(){
+		return pollingWithBackup;
+	}
+	
 	
 	/**method to a backup server on this peer 
 	 * @throws RemoteException 
@@ -98,6 +102,8 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		//Initializing a player on this peer.
 		clientObj = new Client();
 		clientObj.setIsClientPrimary(true);
+		clientObj.setPeerImplReference(this);
+		
 		serverObj.getExecuteGameObj().joinGame(clientObj);
 		serverObj.getExecuteGameObj().setFlagTwentySecOver(true);
 		//Primary Generates treasure and prints board in text form 
@@ -108,7 +114,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		serverObj.callBackAllClients();
 		serverObj.getExecuteGameObj().getBoard().printBoard(clientObj.getSelfId());
 		//This thread does polling with back up server
-		Thread pollingWithBackup = clientObj.getPollingWithBackup();
+//		Thread pollingWithBackup = clientObj.getPollingWithBackup();
 		pollingWithBackup = new Thread(this);
 		pollingWithBackup.start();
 		

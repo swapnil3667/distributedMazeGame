@@ -29,6 +29,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
     Thread pollingWithPrimary = null;
     Thread pollingWithBackup = null;
     ClientInterface primaryClient = null;
+    PeerImpl peerObj = null;
     
     private static final class Lock { }
     private final Object lock = new Lock();
@@ -77,6 +78,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
     
     public ExecuteGame getBackupExecuteGameStub() throws RemoteException{
     	return backupExecuteGameStub;
+    }
+    
+    public void setPeerImplReference(PeerImpl peerObj) throws RemoteException{
+    	this.peerObj = peerObj;
     }
     
     /**
@@ -185,7 +190,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 				changeConsoleModeStty();
 				board.printFinalResultForPlayers(getSelfId());
 				if(getIsClientBackup()) pollingWithPrimary.interrupt();
-				if(getIsClientPrimary()) pollingWithBackup.interrupt();
+				if(getIsClientPrimary()) peerObj.getBackupPollingThread().interrupt();
 //				else if (getIsClientPrimary()) 
 //				System.exit(0);
 				break;
@@ -207,6 +212,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
     		executeGameStub = (ExecuteGame) registry.lookup("Primary");
     		if(executeGameStub.joinGame(this)){
     			logObject.info("Request processed at server side, id assigned : "+selfId);
+    		}else{
+    			logObject.info("Cannot join for this game, joining window is over");
+    			System.exit(0);
     		}
     		
     		synchronized (lock) {
@@ -263,6 +271,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 					newPeer.setClientObj(this);
 					newPeer.setServerObj(newServer);
 					newPeer.selectPlayerForBackup();	//Is back up alive thread
+					setPeerImplReference((PeerImpl) newPeer);
+					
 					pollingWithPrimary = new Thread((Runnable) newPeer);
 					pollingWithPrimary.start();
 					changeConsoleModeStty();

@@ -17,5 +17,6 @@ public interface ClientInterface extends Remote {
     public boolean isBackupAlive(Board board,List<ClientInterface> listOfClients, ClientInterface primaryClient) throws RemoteException, InterruptedException, IOException, CloneNotSupportedException;
     public void setBackupExecuteGameStub(ExecuteGame backupExecuteGameStub) throws RemoteException;
     public ExecuteGame getBackupExecuteGameStub() throws RemoteException;
-    public Thread getPollingWithBackup() throws RemoteException;  
+    public Thread getPollingWithBackup() throws RemoteException;
+    public void setPeerImplReference(PeerImpl peerObj) throws RemoteException;
 }

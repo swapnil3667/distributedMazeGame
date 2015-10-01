@@ -13,7 +13,7 @@ public class BoardImpl implements Board, Serializable{
 	List<Treasure> treasureList = null;
 	boolean isGameOver = false;
 	private static Logger logObject = Logger.getLogger(ExecuteGameImpl.class.getName());
-	private static Board board = null;
+	volatile private static Board board = null;
 
 	/*Colors*/
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -252,6 +252,7 @@ public class BoardImpl implements Board, Serializable{
 				System.out.println("Player with id "+eachPlayer.getId()+" scored "+eachPlayer.getTreasureCount());
 			}
 		}
+		System.exit(0);
 //		changeConsoleModeStty();
 	}
 	

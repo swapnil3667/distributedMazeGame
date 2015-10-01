@@ -26,7 +26,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
     ExecuteGame executeGameStubNew = null;
     ExecuteGame backupExecuteGameStub = (ExecuteGameImpl) ExecuteGameImpl.getInstance();
     String host = null;
-    Thread pollingWithBackup = null;
+    Thread pollingWithPrimary = null;
     ClientInterface primaryClient = null;
     
     private static final class Lock { }
@@ -58,8 +58,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
     
     public void setIsClientBackup(boolean isClientSecondary) throws RemoteException, InterruptedException{
     	this.isClientSecondary = isClientSecondary;
-    	Thread pollingWithPrim = new Thread(this);
-    	pollingWithPrim.start();
+    	pollingWithPrimary = new Thread(this);
+    	pollingWithPrimary.start();
     }
     
     public boolean getIsClientBackup() throws RemoteException{
@@ -179,6 +179,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 				logObject.info("All treasures taken, game is over");
 				changeConsoleModeStty();
 				board.printFinalResultForPlayers(getSelfId());
+				if(getIsClientBackup()) pollingWithPrimary.interrupt();
+//				else if (getIsClientPrimary()) 
+//				System.exit(0);
 				break;
 			}
 		}
@@ -236,6 +239,9 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 	    		changeConsoleModeStty();
 	    		}catch (InterruptedException | IOException e5){}
 	    		try {
+	    			/*if(backupExecuteGameStub.getBoard().getIsGameOverFlag()) {
+	    				System.exit(0);
+	    			}*/
 	    			ExecuteGame stub = null;
 	    			resetConsoleMode();
 					Registry registry = LocateRegistry.getRegistry();
@@ -251,8 +257,8 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 					newPeer.setClientObj(this);
 					newPeer.setServerObj(newServer);
 					newPeer.selectPlayerForBackup();	//Is back up alive thread
-					pollingWithBackup = new Thread((Runnable) newPeer);
-					pollingWithBackup.start();
+					pollingWithPrimary = new Thread((Runnable) newPeer);
+					pollingWithPrimary.start();
 					changeConsoleModeStty();
 						
 					} catch (RemoteException e2) {} catch (AlreadyBoundException e3) {} catch (NotBoundException e4) {} catch (InterruptedException e1) {} catch (IOException e1) {}

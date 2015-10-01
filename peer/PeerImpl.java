@@ -97,6 +97,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		
 		//Initializing a player on this peer.
 		clientObj = new Client();
+		clientObj.setIsClientPrimary(true);
 		serverObj.getExecuteGameObj().joinGame(clientObj);
 		serverObj.getExecuteGameObj().setFlagTwentySecOver(true);
 		//Primary Generates treasure and prints board in text form 

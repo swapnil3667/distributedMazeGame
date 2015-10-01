@@ -26,7 +26,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 	ClientInterface backupClientPlayer = null;
 	int sizeOfBoard = 0;
 	int noOfTreasures = 0;
-	Thread pollingWithBackup = null;
+//	Thread pollingWithBackup = null;
 	
 	
 	
@@ -108,6 +108,7 @@ public class PeerImpl  implements Peer, Serializable, Runnable {
 		serverObj.callBackAllClients();
 		serverObj.getExecuteGameObj().getBoard().printBoard(clientObj.getSelfId());
 		//This thread does polling with back up server
+		Thread pollingWithBackup = clientObj.getPollingWithBackup();
 		pollingWithBackup = new Thread(this);
 		pollingWithBackup.start();
 		

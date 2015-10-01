@@ -27,6 +27,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
     ExecuteGame backupExecuteGameStub = (ExecuteGameImpl) ExecuteGameImpl.getInstance();
     String host = null;
     Thread pollingWithPrimary = null;
+    Thread pollingWithBackup = null;
     ClientInterface primaryClient = null;
     
     private static final class Lock { }
@@ -54,6 +55,10 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
     
     public boolean getIsClientPrimary() throws RemoteException{
     	return isClientPrimary;
+    }
+    
+    public Thread getPollingWithBackup() throws RemoteException{
+    	return pollingWithBackup;
     }
     
     public void setIsClientBackup(boolean isClientSecondary) throws RemoteException, InterruptedException{
@@ -180,6 +185,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface, Runn
 				changeConsoleModeStty();
 				board.printFinalResultForPlayers(getSelfId());
 				if(getIsClientBackup()) pollingWithPrimary.interrupt();
+				if(getIsClientPrimary()) pollingWithBackup.interrupt();
 //				else if (getIsClientPrimary()) 
 //				System.exit(0);
 				break;
